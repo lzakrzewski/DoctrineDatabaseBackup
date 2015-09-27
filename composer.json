@@ -21,7 +21,6 @@
     "psr-4" : { "Lucaszz\\DoctrineDatabaseBackup\\tests\\" : "tests" }
   },
   "require-dev": {
-    "phpunit/phpunit" : "~4.8",
-    "doctrine/orm": "~2.2,>=2.2.3,<2.5"
+    "phpunit/phpunit" : "~4.8"
   }
 }
