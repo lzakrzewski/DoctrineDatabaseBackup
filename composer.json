@@ -3,7 +3,8 @@
   "type": "library",
   "description": "Doctrine Database back",
   "require": {
-    "php": ">=5.4"
+    "php": ">=5.4",
+    "doctrine/orm": "^2.4.8"
   },
   "license": "MIT",
   "authors": [
