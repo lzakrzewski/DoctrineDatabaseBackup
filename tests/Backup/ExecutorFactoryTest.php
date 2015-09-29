@@ -29,6 +29,19 @@ class ExecutorFactoryTest extends \PHPUnit_Framework_TestCase
 
         $this->assertInstanceOf('Lucaszz\DoctrineDatabaseBackup\Backup\Executor\SqliteExecutor', $executor);
     }
+
+    /**
+     * @test
+     * @expectedException \RuntimeException
+     */
+    public function it_does_not_supports_sqlite_in_memory()
+    {
+        $this->connection->getDatabasePlatform()->willReturn($this->sqlitePlatform->reveal());
+        $this->connection->getParams()->willReturn(array('path' => ':memory:', 'memory' => true));
+
+        $this->factory->create();
+    }
+
     /**
      * @test
      * @expectedException \RuntimeException
