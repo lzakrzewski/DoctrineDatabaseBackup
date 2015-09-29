@@ -24,6 +24,10 @@ class ExecutorFactory
         $params = $this->connection->getParams();
 
         if ($this->connection->getDatabasePlatform() instanceof SqlitePlatform) {
+            if (false === isset($params['path']) || $params['path'] == ':memory:') {
+                throw new \RuntimeException('Backup for Sqlite "in_memory" is not supported.');
+            }
+
             return new SqliteExecutor($params['path']);
         }
 
