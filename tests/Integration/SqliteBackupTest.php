@@ -3,10 +3,9 @@
 namespace Lucaszz\DoctrineDatabaseBackup\tests\Integration;
 
 use Doctrine\DBAL\DriverManager;
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Tools\SchemaTool;
-use Doctrine\ORM\Tools\Setup;
 use Lucaszz\DoctrineDatabaseBackup\Backup\Backup;
+use Lucaszz\DoctrineDatabaseBackup\Backup\DoctrineDatabaseBackup;
 
 class SqliteBackupTest extends IntegrationTestCase
 {
@@ -35,7 +34,7 @@ class SqliteBackupTest extends IntegrationTestCase
 
         $this->setupDatabase();
 
-        $this->backup = new Backup($this->entityManager->getConnection());
+        $this->backup = new DoctrineDatabaseBackup($this->entityManager->getConnection());
     }
 
     /**

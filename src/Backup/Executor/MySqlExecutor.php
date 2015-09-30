@@ -2,7 +2,9 @@
 
 namespace Lucaszz\DoctrineDatabaseBackup\Backup\Executor;
 
-class MySqlExecutor implements Executor
+use Lucaszz\DoctrineDatabaseBackup\Backup\Backup;
+
+class MySqlExecutor implements Backup
 {
     /** @var string */
     private $databaseName;

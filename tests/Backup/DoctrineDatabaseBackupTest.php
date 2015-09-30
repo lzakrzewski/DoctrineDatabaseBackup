@@ -4,17 +4,17 @@ namespace Lucaszz\DoctrineDatabaseBackup\tests\Backup;
 
 use Doctrine\DBAL\Connection;
 use Lucaszz\DoctrineDatabaseBackup\Backup\Backup;
-use Lucaszz\DoctrineDatabaseBackup\Backup\Executor\Executor;
+use Lucaszz\DoctrineDatabaseBackup\Backup\DoctrineDatabaseBackup;
 use Lucaszz\DoctrineDatabaseBackup\Backup\ExecutorFactory;
 use Prophecy\Prophecy\ObjectProphecy;
 
-class BackupTest extends \PHPUnit_Framework_TestCase
+class DoctrineDatabaseBackupTest extends \PHPUnit_Framework_TestCase
 {
     /** @var ObjectProphecy|Connection */
     private $connection;
     /** @var ObjectProphecy|ExecutorFactory */
     private $factory;
-    /** @var ObjectProphecy|Executor */
+    /** @var ObjectProphecy|Backup */
     private $executor;
 
     /** @test */
@@ -23,7 +23,7 @@ class BackupTest extends \PHPUnit_Framework_TestCase
         $this->executor->create()->shouldBeCalled();
         $this->factory->create()->willReturn($this->executor->reveal());
 
-        $backup = new Backup($this->connection->reveal(), $this->factory->reveal());
+        $backup = new DoctrineDatabaseBackup($this->connection->reveal(), $this->factory->reveal());
 
         $backup->create();
     }
@@ -34,7 +34,7 @@ class BackupTest extends \PHPUnit_Framework_TestCase
         $this->executor->restore()->shouldBeCalled();
         $this->factory->create()->willReturn($this->executor->reveal());
 
-        $backup = new Backup($this->connection->reveal(), $this->factory->reveal());
+        $backup = new DoctrineDatabaseBackup($this->connection->reveal(), $this->factory->reveal());
 
         $backup->restore();
     }
@@ -45,8 +45,8 @@ class BackupTest extends \PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $this->connection = $this->prophesize('\Doctrine\DBAL\Connection');
-        $this->factory = $this->prophesize('\Lucaszz\DoctrineDatabaseBackup\Backup\ExecutorFactory');
-        $this->executor = $this->prophesize('Lucaszz\DoctrineDatabaseBackup\Backup\Executor\Executor');
+        $this->factory = $this->prophesize('Lucaszz\DoctrineDatabaseBackup\Backup\ExecutorFactory');
+        $this->executor = $this->prophesize('Lucaszz\DoctrineDatabaseBackup\Backup\Backup');
     }
 
     /**

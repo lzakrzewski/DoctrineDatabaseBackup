@@ -3,6 +3,7 @@
 namespace Lucaszz\DoctrineDatabaseBackup\tests\Integration;
 
 use Lucaszz\DoctrineDatabaseBackup\Backup\Backup;
+use Lucaszz\DoctrineDatabaseBackup\Backup\DoctrineDatabaseBackup;
 
 class MySqlBackupTest extends IntegrationTestCase
 {
@@ -36,7 +37,7 @@ class MySqlBackupTest extends IntegrationTestCase
         $connection->getParams()->willReturn(array('dbname' => 'test-dummy'));
         $connection->getDatabasePlatform()->willReturn($mysqlPlatform->reveal());
 
-        $this->backup = new Backup($connection->reveal());
+        $this->backup = new DoctrineDatabaseBackup($connection->reveal());
     }
 
     /**

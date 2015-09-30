@@ -2,7 +2,9 @@
 
 namespace Lucaszz\DoctrineDatabaseBackup\Backup\Executor;
 
-class SqliteExecutor implements Executor
+use Lucaszz\DoctrineDatabaseBackup\Backup\Backup;
+
+class SqliteExecutor implements Backup
 {
     const BACKUP_DIR = 'db-backup';
 
