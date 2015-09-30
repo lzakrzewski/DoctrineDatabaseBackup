@@ -1,6 +1,6 @@
 <?php
 
-namespace Lucaszz\DoctrineDatabaseBackup\Tests\Backup\Executor;
+namespace Lucaszz\DoctrineDatabaseBackup\tests\Backup\Executor;
 
 use Lucaszz\DoctrineDatabaseBackup\Backup\Executor\SqliteExecutor;
 use org\bovigo\vfs\vfsStream;
