@@ -61,6 +61,17 @@ abstract class IntegrationTestCase extends \PHPUnit_Framework_TestCase
         return get_class($this->productInstance());
     }
 
+    protected function addProduct()
+    {
+        $this->entityManager->persist($this->productInstance());
+        $this->entityManager->flush();
+    }
+
+    protected function assertThatDatabaseIsClear()
+    {
+        $this->assertEmpty($this->entityManager->getRepository($this->productClass())->findAll());
+    }
+
     /**
      * @return array
      */

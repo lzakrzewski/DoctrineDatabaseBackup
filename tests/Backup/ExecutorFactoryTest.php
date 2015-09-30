@@ -4,16 +4,19 @@ namespace Lucaszz\DoctrineDatabaseBackup\tests\Backup;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Platforms\MySqlPlatform;
+use Doctrine\DBAL\Platforms\OraclePlatform;
 use Doctrine\DBAL\Platforms\SqlitePlatform;
 use Lucaszz\DoctrineDatabaseBackup\Backup\ExecutorFactory;
 use Prophecy\Prophecy\ObjectProphecy;
 
 class ExecutorFactoryTest extends \PHPUnit_Framework_TestCase
 {
-    /** @var  ObjectProphecy|SqlitePlatform */
+    /** @var ObjectProphecy|SqlitePlatform */
     private $sqlitePlatform;
-    /** @var  ObjectProphecy|MySqlPlatform */
+    /** @var ObjectProphecy|MySqlPlatform */
     private $mySqlPlatform;
+    /** @var ObjectProphecy|OraclePlatform */
+    private $unknownPlatform;
     /** @var ObjectProphecy|Connection */
     private $connection;
     /** @var ObjectProphecy|ExecutorFactory */
@@ -28,6 +31,17 @@ class ExecutorFactoryTest extends \PHPUnit_Framework_TestCase
         $executor = $this->factory->create();
 
         $this->assertInstanceOf('Lucaszz\DoctrineDatabaseBackup\Backup\Executor\SqliteExecutor', $executor);
+    }
+
+    /** @test */
+    public function it_can_create_mysql_executor()
+    {
+        $this->connection->getDatabasePlatform()->willReturn($this->mySqlPlatform->reveal());
+        $this->connection->getParams()->willReturn(array('dbname' => 'test-database'));
+
+        $executor = $this->factory->create();
+
+        $this->assertInstanceOf('Lucaszz\DoctrineDatabaseBackup\Backup\Executor\MySqlExecutor', $executor);
     }
 
     /**
@@ -48,7 +62,7 @@ class ExecutorFactoryTest extends \PHPUnit_Framework_TestCase
      */
     public function it_does_not_supports_another_database_platforms()
     {
-        $this->connection->getDatabasePlatform()->willReturn($this->mySqlPlatform->reveal());
+        $this->connection->getDatabasePlatform()->willReturn($this->unknownPlatform->reveal());
 
         $this->factory->create();
     }
@@ -60,7 +74,9 @@ class ExecutorFactoryTest extends \PHPUnit_Framework_TestCase
     {
         $this->sqlitePlatform = $this->prophesize('Doctrine\DBAL\Platforms\SqlitePlatform');
         $this->mySqlPlatform = $this->prophesize('Doctrine\DBAL\Platforms\MySqlPlatform');
-        $this->connection = $this->prophesize('\Doctrine\DBAL\Connection');
+        $this->unknownPlatform = $this->prophesize('Doctrine\DBAL\Platforms\OraclePlatform');
+        $this->connection = $this->prophesize('Doctrine\DBAL\Connection');
+
         $this->factory = new ExecutorFactory($this->connection->reveal());
     }
 

@@ -3,7 +3,9 @@
 namespace Lucaszz\DoctrineDatabaseBackup\Backup;
 
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Platforms\MySqlPlatform;
 use Doctrine\DBAL\Platforms\SqlitePlatform;
+use Lucaszz\DoctrineDatabaseBackup\Backup\Executor\MySqlExecutor;
 use Lucaszz\DoctrineDatabaseBackup\Backup\Executor\SqliteExecutor;
 
 class ExecutorFactory
@@ -29,6 +31,10 @@ class ExecutorFactory
             }
 
             return new SqliteExecutor($params['path']);
+        }
+
+        if ($this->connection->getDatabasePlatform() instanceof MySqlPlatform) {
+            return new MySqlExecutor($params['dbname']);
         }
 
         throw new \RuntimeException('Unsupported database platform. Currently "SqlitePlatform" is supported.');

@@ -2,13 +2,9 @@
 
 namespace Lucaszz\DoctrineDatabaseBackup\tests\Integration;
 
-use Doctrine\DBAL\DriverManager;
-use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\Tools\SchemaTool;
-use Doctrine\ORM\Tools\Setup;
 use Lucaszz\DoctrineDatabaseBackup\Backup\Backup;
 
-class SqliteBackupTest extends IntegrationTestCase
+class MySqlBackupTest extends IntegrationTestCase
 {
     /** @var Backup */
     private $backup;
@@ -35,7 +31,12 @@ class SqliteBackupTest extends IntegrationTestCase
 
         $this->setupDatabase();
 
-        $this->backup = new Backup($this->entityManager->getConnection());
+        $connection = $this->prophesize('\Doctrine\DBAL\Connection');
+        $mysqlPlatform = $this->prophesize('\Doctrine\DBAL\Platforms\MySqlPlatform');
+        $connection->getParams()->willReturn(array('dbname' => 'test-dummy'));
+        $connection->getDatabasePlatform()->willReturn($mysqlPlatform->reveal());
+
+        $this->backup = new Backup($connection->reveal());
     }
 
     /**
@@ -54,28 +55,29 @@ class SqliteBackupTest extends IntegrationTestCase
     protected function getParams()
     {
         return array(
-            'driver' => 'pdo_sqlite',
+            'driver' => 'pdo_mysql',
             'user' => 'root',
             'password' => '',
-            'path' => __DIR__.'/database/sqlite.db',
+            'dbname' => 'test',
         );
     }
 
     protected function setupDatabase()
     {
-        $params = $this->getParams();
-
-        $tmpConnection = DriverManager::getConnection($params);
-        $tmpConnection->getSchemaManager()->createDatabase($params['path']);
-
-        $schemaTool = new SchemaTool($this->entityManager);
-        $schemaTool->dropDatabase();
-
-        $class = $this->productClass();
-        $schemaTool->createSchema(array($this->entityManager->getClassMetadata($class)));
+        //Todo not implemented yet
     }
 
     private function givenDatabaseIsClear()
     {
+    }
+
+    protected function addProduct()
+    {
+        //Todo not implemented yet
+    }
+
+    protected function assertThatDatabaseIsClear()
+    {
+        //Todo not implemented yet
     }
 }
