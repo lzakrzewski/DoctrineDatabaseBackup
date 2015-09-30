@@ -1,6 +1,6 @@
 <?php
 
-namespace tests\Lucaszz\DoctrineDatabaseBackup\Backup;
+namespace Lucaszz\DoctrineDatabaseBackup\Tests\Backup;
 
 use Doctrine\DBAL\Connection;
 use Lucaszz\DoctrineDatabaseBackup\Backup\Backup;
