@@ -2,8 +2,9 @@
 
 namespace Lucaszz\DoctrineDatabaseBackup\Backup\Executor;
 
-use Lucaszz\DoctrineDatabaseBackup\Backup\BackupInterface;
-
-interface Executor extends BackupInterface
+interface Executor
 {
+    public function create();
+
+    public function restore();
 }

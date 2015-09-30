@@ -4,7 +4,7 @@ namespace Lucaszz\DoctrineDatabaseBackup\tests\Backup;
 
 use Doctrine\DBAL\Connection;
 use Lucaszz\DoctrineDatabaseBackup\Backup\Backup;
-use Lucaszz\DoctrineDatabaseBackup\Backup\BackupInterface;
+use Lucaszz\DoctrineDatabaseBackup\Backup\Executor\Executor;
 use Lucaszz\DoctrineDatabaseBackup\Backup\ExecutorFactory;
 use Prophecy\Prophecy\ObjectProphecy;
 
@@ -14,7 +14,7 @@ class BackupTest extends \PHPUnit_Framework_TestCase
     private $connection;
     /** @var ObjectProphecy|ExecutorFactory */
     private $factory;
-    /** @var ObjectProphecy|BackupInterface */
+    /** @var ObjectProphecy|Executor */
     private $executor;
 
     /** @test */

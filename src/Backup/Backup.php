@@ -5,7 +5,7 @@ namespace Lucaszz\DoctrineDatabaseBackup\Backup;
 use Doctrine\DBAL\Connection;
 use Lucaszz\DoctrineDatabaseBackup\Backup\Executor\Executor;
 
-class Backup implements BackupInterface
+class Backup
 {
     /** @var Executor */
     private $executor;
@@ -25,17 +25,11 @@ class Backup implements BackupInterface
         $this->executor = $factory->create();
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function create()
     {
         $this->executor->create();
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function restore()
     {
         $this->executor->restore();
