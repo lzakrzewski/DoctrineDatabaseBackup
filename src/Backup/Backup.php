@@ -17,7 +17,9 @@ class Backup implements BackupInterface
     public function __construct(Connection $connection, ExecutorFactory $factory = null)
     {
         if (null === $factory) {
-            $factory = (new ExecutorFactory($connection))->create();
+            $this->executor = (new ExecutorFactory($connection))->create();
+
+            return;
         }
 
         $this->executor = $factory->create();
