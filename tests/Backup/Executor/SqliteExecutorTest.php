@@ -119,8 +119,8 @@ class SqliteExecutorTest extends \PHPUnit_Framework_TestCase
 
     private function givenGarbageInBackupDirectoryExists()
     {
-        mkdir('vfs://project/' . SqliteExecutor::BACKUP_DIR);
+        mkdir('vfs://project/'.SqliteExecutor::BACKUP_DIR);
 
-        file_put_contents('vfs://project/' . SqliteExecutor::BACKUP_DIR. '/garbage.db', 'garbage-garbage');
+        file_put_contents('vfs://project/'.SqliteExecutor::BACKUP_DIR.'/garbage.db', 'garbage-garbage');
     }
 }

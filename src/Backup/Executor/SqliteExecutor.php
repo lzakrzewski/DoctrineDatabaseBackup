@@ -41,7 +41,7 @@ class SqliteExecutor implements Executor
     public function restore()
     {
         if (false === $this->isBackupCreated()) {
-            throw new \RuntimeException("Backup file should be created before restore database.");
+            throw new \RuntimeException('Backup file should be created before restore database.');
         }
 
         $backupPath = $this->backupPath();
@@ -71,12 +71,12 @@ class SqliteExecutor implements Executor
     {
         $pathinfo = pathinfo($this->sourcePath);
 
-        return $pathinfo['dirname'] . '/' . self::BACKUP_DIR;
+        return $pathinfo['dirname'].'/'.self::BACKUP_DIR;
     }
 
     private function backupPath()
     {
-        return $this->backupDir() . '/' . md5(getmypid()) . '.db';
+        return $this->backupDir().'/'.md5(getmypid()).'.db';
     }
 
     private function copy($source, $destination)
@@ -95,10 +95,10 @@ class SqliteExecutor implements Executor
         }
 
         foreach (scandir($this->backupDir()) as $file) {
-            $filePath = $backupDir . '/' . $file;
+            $filePath = $backupDir.'/'.$file;
 
             if (false === is_file($filePath) || $filePath == $this->backupPath()) {
-                continue ;
+                continue;
             }
 
             unlink($filePath);
