@@ -34,7 +34,7 @@ class ExecutorFactory
         }
 
         if ($this->connection->getDatabasePlatform() instanceof MySqlPlatform) {
-            return new MySqlExecutor($params['dbname']);
+            return new MySqlExecutor($params['dbname'], new Filesystem(), new BackupFile(__DIR__.'/../../tests/Integration/database'));
         }
 
         throw new \RuntimeException('Unsupported database platform. Currently "SqlitePlatform" is supported.');

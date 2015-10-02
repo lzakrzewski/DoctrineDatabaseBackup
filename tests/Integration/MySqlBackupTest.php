@@ -65,21 +65,19 @@ class MySqlBackupTest extends IntegrationTestCase
      */
     protected function setupDatabase()
     {
-        $connection = $this->entityManager->getConnection();
-
         $params = $this->getParams();
         $name = $params['dbname'];
 
         unset($params['dbname']);
 
         $tmpConnection = DriverManager::getConnection($params);
-        $nameEscaped = $connection->getDatabasePlatform()->quoteSingleIdentifier($name);
+        $nameEscaped = $tmpConnection->getDatabasePlatform()->quoteSingleIdentifier($name);
 
-        if (in_array($name, $connection->getSchemaManager()->listDatabases())) {
+        if (in_array($name, $tmpConnection->getSchemaManager()->listDatabases())) {
             $tmpConnection->getSchemaManager()->dropDatabase($nameEscaped);
         }
 
-        $connection->getSchemaManager()->createDatabase($nameEscaped);
+        $tmpConnection->getSchemaManager()->createDatabase($nameEscaped);
 
         $class = $this->productClass();
         $schemaTool = new SchemaTool($this->entityManager);
@@ -88,10 +86,5 @@ class MySqlBackupTest extends IntegrationTestCase
 
     private function givenDatabaseIsClear()
     {
-    }
-
-    protected function assertThatDatabaseIsClear()
-    {
-        //Todo not implemented yet
     }
 }

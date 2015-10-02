@@ -4,7 +4,8 @@
   "description": "Doctrine Database back",
   "require": {
     "php": ">=5.4",
-    "doctrine/orm": "^2.4.8"
+    "doctrine/orm": "^2.4.8",
+    "symfony/process": "~2.7"
   },
   "license": "MIT",
   "authors": [
