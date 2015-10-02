@@ -2,6 +2,8 @@
 
 namespace Lucaszz\DoctrineDatabaseBackup\tests\Integration;
 
+use Doctrine\DBAL\DriverManager;
+use Doctrine\ORM\Tools\SchemaTool;
 use Lucaszz\DoctrineDatabaseBackup\Backup\Backup;
 use Lucaszz\DoctrineDatabaseBackup\Backup\DoctrineDatabaseBackup;
 
@@ -32,12 +34,7 @@ class MySqlBackupTest extends IntegrationTestCase
 
         $this->setupDatabase();
 
-        $connection = $this->prophesize('\Doctrine\DBAL\Connection');
-        $mysqlPlatform = $this->prophesize('\Doctrine\DBAL\Platforms\MySqlPlatform');
-        $connection->getParams()->willReturn(array('dbname' => 'test-dummy'));
-        $connection->getDatabasePlatform()->willReturn($mysqlPlatform->reveal());
-
-        $this->backup = new DoctrineDatabaseBackup($connection->reveal());
+        $this->backup = new DoctrineDatabaseBackup($this->entityManager->getConnection());
     }
 
     /**
@@ -59,22 +56,38 @@ class MySqlBackupTest extends IntegrationTestCase
             'driver' => 'pdo_mysql',
             'user' => 'root',
             'password' => '',
-            'dbname' => 'test',
+            'dbname' => 'doctrine-database-test',
         );
     }
 
+    /**
+     * @todo extract drop && create db methods
+     */
     protected function setupDatabase()
     {
-        //Todo not implemented yet
+        $connection = $this->entityManager->getConnection();
+
+        $params = $this->getParams();
+        $name = $params['dbname'];
+
+        unset($params['dbname']);
+
+        $tmpConnection = DriverManager::getConnection($params);
+        $nameEscaped = $connection->getDatabasePlatform()->quoteSingleIdentifier($name);
+
+        if (in_array($name, $connection->getSchemaManager()->listDatabases())) {
+            $tmpConnection->getSchemaManager()->dropDatabase($nameEscaped);
+        }
+
+        $connection->getSchemaManager()->createDatabase($nameEscaped);
+
+        $class = $this->productClass();
+        $schemaTool = new SchemaTool($this->entityManager);
+        $schemaTool->createSchema(array($this->entityManager->getClassMetadata($class)));
     }
 
     private function givenDatabaseIsClear()
     {
-    }
-
-    protected function addProduct()
-    {
-        //Todo not implemented yet
     }
 
     protected function assertThatDatabaseIsClear()
