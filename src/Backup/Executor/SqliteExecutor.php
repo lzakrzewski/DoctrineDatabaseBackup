@@ -3,20 +3,28 @@
 namespace Lucaszz\DoctrineDatabaseBackup\Backup\Executor;
 
 use Lucaszz\DoctrineDatabaseBackup\Backup\Backup;
+use Lucaszz\DoctrineDatabaseBackup\Backup\BackupFile;
+use Lucaszz\DoctrineDatabaseBackup\Backup\Filesystem;
 
 class SqliteExecutor implements Backup
 {
-    const BACKUP_DIR = 'db-backup';
-
     /** @var string */
     private $sourcePath;
+    /** @var Filesystem */
+    private $filesystem;
+    /** @var BackupFile */
+    private $backupFile;
 
     /**
-     * @param string $sourcePath
+     * @param string     $sourcePath
+     * @param Filesystem $filesystem
+     * @param BackupFile $backupFile
      */
-    public function __construct($sourcePath)
+    public function __construct($sourcePath, Filesystem $filesystem, BackupFile $backupFile)
     {
         $this->sourcePath = $sourcePath;
+        $this->filesystem = $filesystem;
+        $this->backupFile = $backupFile;
     }
 
     /**
@@ -24,17 +32,14 @@ class SqliteExecutor implements Backup
      */
     public function create()
     {
-        $this->cleanUp();
+        $sourcePath = $this->sourcePath;
 
-        if (false === file_exists($this->sourcePath)) {
-            throw new \RuntimeException(sprintf("Source database '%s' should exists.", $this->sourcePath));
+        if (!$this->filesystem->exists($sourcePath)) {
+            throw new \RuntimeException(sprintf("Source database '%s' should exists.", $sourcePath));
         }
 
-        if ($this->isBackupCreated()) {
-            return;
-        }
-
-        $this->createBackup();
+        $this->filesystem->prepareDir($this->backupFile->dir());
+        $this->filesystem->copy($sourcePath, $this->backupFile->path());
     }
 
     /**
@@ -42,68 +47,19 @@ class SqliteExecutor implements Backup
      */
     public function restore()
     {
-        if (false === $this->isBackupCreated()) {
+        if (!$this->isBackupCreated()) {
             throw new \RuntimeException('Backup file should be created before restore database.');
         }
 
-        $backupPath = $this->backupPath();
-
-        $this->copy($backupPath, $this->sourcePath);
+        $this->filesystem->copy($this->backupFile->path(), $this->sourcePath);
     }
 
     private function isBackupCreated()
     {
-        if (false === file_exists($this->backupDir())) {
+        if (!$this->filesystem->exists($this->backupFile->dir())) {
             return false;
         }
 
-        return file_exists($this->backupPath());
-    }
-
-    private function createBackup()
-    {
-        @mkdir($this->backupDir());
-
-        $backupPath = $this->backupPath();
-
-        $this->copy($this->sourcePath, $backupPath);
-    }
-
-    private function backupDir()
-    {
-        $pathinfo = pathinfo($this->sourcePath);
-
-        return $pathinfo['dirname'].'/'.self::BACKUP_DIR;
-    }
-
-    private function backupPath()
-    {
-        return $this->backupDir().'/'.md5(getmypid()).'.db';
-    }
-
-    private function copy($source, $destination)
-    {
-        if (!copy($source, $destination)) {
-            throw new \RuntimeException(sprintf("Unable to copy '%s' to '%s'", $source, $destination));
-        }
-    }
-
-    private function cleanUp()
-    {
-        $backupDir = $this->backupDir();
-
-        if (false === file_exists($this->backupDir())) {
-            return false;
-        }
-
-        foreach (scandir($this->backupDir()) as $file) {
-            $filePath = $backupDir.'/'.$file;
-
-            if (false === is_file($filePath) || $filePath == $this->backupPath()) {
-                continue;
-            }
-
-            unlink($filePath);
-        }
+        return $this->filesystem->exists($this->backupFile->path());
     }
 }

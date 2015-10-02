@@ -2,13 +2,19 @@
 
 namespace Lucaszz\DoctrineDatabaseBackup\tests\Backup\Executor;
 
+use Lucaszz\DoctrineDatabaseBackup\Backup\BackupFile;
 use Lucaszz\DoctrineDatabaseBackup\Backup\Executor\SqliteExecutor;
-use org\bovigo\vfs\vfsStream;
+use Lucaszz\DoctrineDatabaseBackup\Backup\Filesystem;
+use Prophecy\Prophecy\ObjectProphecy;
 
 class SqliteExecutorTest extends \PHPUnit_Framework_TestCase
 {
     /** @var SqliteExecutor */
     private $executor;
+    /** @var ObjectProphecy|Filesystem */
+    private $filesystem;
+    /** @var ObjectProphecy|BackupFile */
+    private $backupFile;
 
     /**
      * @test
@@ -17,53 +23,29 @@ class SqliteExecutorTest extends \PHPUnit_Framework_TestCase
      */
     public function it_fails_when_source_database_file_does_not_exists()
     {
+        $this->filesystem->exists('/var/www/project/database/sqlite.db')->willReturn(false);
+
         $this->executor->create();
     }
 
     /** @test */
-    public function it_creates_backup_file()
+    public function it_creates_database_backup_file()
     {
-        $this->givenSourceDatabaseExists();
+        $this->filesystem->exists('/var/www/project/database/sqlite.db')->willReturn(true);
+        $this->filesystem->prepareDir('/var/www/project/backup')->shouldBeCalled();
+        $this->filesystem->copy('/var/www/project/database/sqlite.db', '/var/www/project/backup/123456')->shouldBeCalled();
 
         $this->executor->create();
-
-        $this->assertThatOneBackupDatabaseFileExists();
-    }
-
-    /** @test */
-    public function if_cleanups_after_test_fails_from_past()
-    {
-        $this->givenSourceDatabaseExists();
-        $this->givenGarbageInBackupDirectoryExists();
-
-        $this->executor->create();
-
-        $this->assertThatOneBackupDatabaseFileExists();
-    }
-
-    /** @test */
-    public function it_does_not_create_more_than_one_backup_file()
-    {
-        $this->givenSourceDatabaseExists();
-
-        $this->executor->create();
-        $this->executor->create();
-
-        $this->assertThatOneBackupDatabaseFileExists();
     }
 
     /** @test */
     public function it_restores_database_from_backup_file()
     {
-        $this->givenSourceDatabaseExists();
-
-        $this->executor->create();
-        $this->removeSourceDatabaseFile();
+        $this->filesystem->exists('/var/www/project/backup')->willReturn(true);
+        $this->filesystem->exists('/var/www/project/backup/123456')->willReturn(true);
+        $this->filesystem->copy('/var/www/project/backup/123456', '/var/www/project/database/sqlite.db')->shouldBeCalled();
 
         $this->executor->restore();
-
-        $this->assertThatOneBackupDatabaseFileExists();
-        $this->assertThatSourceDatabaseFileExists();
     }
 
     /**
@@ -73,10 +55,11 @@ class SqliteExecutorTest extends \PHPUnit_Framework_TestCase
      */
     public function it_fails_when_backup_database_file_does_not_exists()
     {
-        $this->executor->restore();
+        $this->filesystem->exists('/var/www/project/backup')->willReturn(true);
+        $this->filesystem->exists('/var/www/project/backup/123456')->willReturn(false);
+        $this->filesystem->copy('/var/www/project/backup/123456', '/var/www/project/database/sqlite.db')->shouldNotBeCalled();
 
-        $this->assertThatOneBackupDatabaseFileExists();
-        $this->assertThatSourceDatabaseFileExists();
+        $this->executor->restore();
     }
 
     /**
@@ -84,9 +67,17 @@ class SqliteExecutorTest extends \PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        vfsStream::setup('project');
+        $this->filesystem = $this->prophesize('Lucaszz\DoctrineDatabaseBackup\Backup\Filesystem');
+        $this->backupFile = $this->prophesize('Lucaszz\DoctrineDatabaseBackup\Backup\BackupFile');
 
-        $this->executor = new SqliteExecutor('vfs://project/sqlite.db');
+        $this->backupFile->dir()->willReturn('/var/www/project/backup');
+        $this->backupFile->path()->willReturn('/var/www/project/backup/123456');
+
+        $this->executor = new SqliteExecutor(
+            '/var/www/project/database/sqlite.db',
+            $this->filesystem->reveal(),
+            $this->backupFile->reveal()
+        );
     }
 
     /**
@@ -94,33 +85,9 @@ class SqliteExecutorTest extends \PHPUnit_Framework_TestCase
      */
     protected function tearDown()
     {
+        $this->filesystem = null;
+        $this->backupFile = null;
+
         $this->executor = null;
-    }
-
-    private function givenSourceDatabaseExists()
-    {
-        file_put_contents('vfs://project/sqlite.db', 'database-contents');
-    }
-
-    private function assertThatOneBackupDatabaseFileExists()
-    {
-        $this->assertCount(1, array_diff(scandir('vfs://project/'.SqliteExecutor::BACKUP_DIR), array('.', '..')));
-    }
-
-    private function assertThatSourceDatabaseFileExists()
-    {
-        $this->assertTrue(file_exists('vfs://project/sqlite.db'));
-    }
-
-    private function removeSourceDatabaseFile()
-    {
-        unlink('vfs://project/sqlite.db');
-    }
-
-    private function givenGarbageInBackupDirectoryExists()
-    {
-        mkdir('vfs://project/'.SqliteExecutor::BACKUP_DIR);
-
-        file_put_contents('vfs://project/'.SqliteExecutor::BACKUP_DIR.'/garbage.db', 'garbage-garbage');
     }
 }

@@ -30,7 +30,7 @@ class ExecutorFactory
                 throw new \RuntimeException('Backup for Sqlite "in_memory" is not supported.');
             }
 
-            return new SqliteExecutor($params['path']);
+            return new SqliteExecutor($params['path'], new Filesystem(), new BackupFile(__DIR__.'/../../tests/Integration/database'));
         }
 
         if ($this->connection->getDatabasePlatform() instanceof MySqlPlatform) {

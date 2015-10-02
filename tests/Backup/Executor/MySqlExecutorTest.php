@@ -67,6 +67,7 @@ class MySqlExecutorTest extends \PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
+        $this->markTestIncomplete();
         vfsStream::setup('project');
 
         $this->executor = new MySqlExecutor('test-database-name');
