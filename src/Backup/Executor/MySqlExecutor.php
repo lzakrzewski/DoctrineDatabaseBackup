@@ -40,8 +40,6 @@ class MySqlExecutor implements Backup
      */
     public function create()
     {
-        $this->filesystem->prepareDir(__DIR__.'/../../../tests/Integration/database');
-
         $params = $this->params();
 
         $command = sprintf('%s %s > %s', $this->mysqldumpBin, escapeshellarg($this->databaseName), escapeshellarg($this->backupFile->path()));
