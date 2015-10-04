@@ -4,49 +4,9 @@ namespace Lucaszz\DoctrineDatabaseBackup\tests\Integration;
 
 use Doctrine\DBAL\DriverManager;
 use Doctrine\ORM\Tools\SchemaTool;
-use Lucaszz\DoctrineDatabaseBackup\Backup\Backup;
-use Lucaszz\DoctrineDatabaseBackup\Backup\DoctrineDatabaseBackup;
 
-class MySqlBackupTest extends IntegrationTestCase
+class MySqlBackupTest extends BackupTestCase
 {
-    /** @var Backup */
-    private $backup;
-
-    /** @test */
-    public function it_can_restore_database()
-    {
-        $this->givenDatabaseIsClear();
-
-        $this->backup->create();
-        $this->addProduct();
-
-        $this->backup->restore();
-
-        $this->assertThatDatabaseIsClear();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function setUp()
-    {
-        parent::setUp();
-
-        $this->setupDatabase();
-
-        $this->backup = new DoctrineDatabaseBackup($this->entityManager->getConnection());
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function tearDown()
-    {
-        $this->backup = null;
-
-        parent::tearDown();
-    }
-
     /**
      * {@inheritdoc}
      */
@@ -61,7 +21,7 @@ class MySqlBackupTest extends IntegrationTestCase
     }
 
     /**
-     * @todo extract drop && create db methods
+     * {@inheritdoc}
      */
     protected function setupDatabase()
     {
@@ -82,9 +42,5 @@ class MySqlBackupTest extends IntegrationTestCase
         $class = $this->productClass();
         $schemaTool = new SchemaTool($this->entityManager);
         $schemaTool->createSchema(array($this->entityManager->getClassMetadata($class)));
-    }
-
-    private function givenDatabaseIsClear()
-    {
     }
 }
