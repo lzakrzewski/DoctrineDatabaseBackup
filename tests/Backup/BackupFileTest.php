@@ -1,6 +1,6 @@
 <?php
 
-namespace Lucaszz\DoctrineDatabaseBackup\tests\Backup\Executor;
+namespace Lucaszz\DoctrineDatabaseBackup\tests\Backup;
 
 use Lucaszz\DoctrineDatabaseBackup\Backup\BackupFile;
 
