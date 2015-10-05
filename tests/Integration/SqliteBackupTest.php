@@ -2,6 +2,7 @@
 
 namespace Lucaszz\DoctrineDatabaseBackup\tests\Integration;
 
+use Lucaszz\DoctrineDatabaseBackup\Backup\BackupFile;
 use Lucaszz\DoctrineDatabaseBackup\Backup\DoctrineDatabaseBackup;
 use Lucaszz\DoctrineDatabaseBackup\tests\Integration\Dictionary\SqliteDictionary;
 
@@ -48,6 +49,20 @@ class SqliteBackupTest extends IntegrationTestCase
         $this->assertThatDatabaseIsClear();
     }
 
+    /** @test */
+    public function it_confirms_that_backup_was_created()
+    {
+        $this->backup->create();
+
+        $this->assertTrue($this->backup->isCreated());
+    }
+
+    /** @test */
+    public function it_confirms_that_backup_was_not_created()
+    {
+        $this->assertFalse($this->backup->isCreated());
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -56,6 +71,8 @@ class SqliteBackupTest extends IntegrationTestCase
         parent::setUp();
 
         $this->backup = new DoctrineDatabaseBackup($this->entityManager);
+
+        $this->refreshSqliteExecutor();
     }
 
     /**
@@ -66,5 +83,15 @@ class SqliteBackupTest extends IntegrationTestCase
         $this->backup = null;
 
         parent::tearDown();
+    }
+
+    private function refreshSqliteExecutor()
+    {
+        $params = $this->entityManager->getConnection()->getParams();
+        $tmpDir = pathinfo($params['path'])['dirname'];
+
+        $backupFile = new BackupFile($tmpDir);
+
+        @unlink($backupFile->path());
     }
 }

@@ -47,14 +47,17 @@ class SqliteExecutor implements Backup
      */
     public function restore()
     {
-        if (!$this->isBackupCreated()) {
+        if (!$this->isCreated()) {
             throw new \RuntimeException('Backup file should be created before restore database.');
         }
 
         $this->filesystem->copy($this->backupFile->path(), $this->sourcePath);
     }
 
-    private function isBackupCreated()
+    /**
+     * {@inheritdoc}
+     */
+    public function isCreated()
     {
         if (!$this->filesystem->exists($this->backupFile->dir())) {
             return false;

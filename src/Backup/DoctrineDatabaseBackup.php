@@ -37,6 +37,14 @@ class DoctrineDatabaseBackup implements Backup
         $this->executor->restore();
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    public function isCreated()
+    {
+        return $this->executor->isCreated();
+    }
+
     public function clear()
     {
         $this->purger->purge();
@@ -56,5 +64,13 @@ class DoctrineDatabaseBackup implements Backup
     public function setPurger(Purger $purger)
     {
         $this->purger = $purger;
+    }
+
+    /**
+     * @return Backup
+     */
+    public function getExecutor()
+    {
+        return $this->executor;
     }
 }

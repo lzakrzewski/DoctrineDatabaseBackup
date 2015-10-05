@@ -30,9 +30,12 @@ class MySqlExecutorTest extends \PHPUnit_Framework_TestCase
     /** @test */
     public function it_restores_database()
     {
+        $this->command->setExpectedOutput('EXAMPLE SQL');
         $this->executor->create();
 
         $this->purger->purge()->shouldBeCalled();
+
+        $this->connection->exec('EXAMPLE SQL')->shouldNotBeCalled();
 
         $this->executor->restore();
     }
@@ -49,6 +52,29 @@ class MySqlExecutorTest extends \PHPUnit_Framework_TestCase
         $this->connection->exec('INSERT INTO table VALUES (1, 2, 3, 4)')->shouldBeCalled();
         $this->connection->commit()->shouldBeCalled();
 
+        $this->executor->restore();
+    }
+
+    /** @test */
+    public function it_confirms_that_backup_was_created()
+    {
+        $this->executor->create();
+
+        $this->assertTrue($this->executor->isCreated());
+    }
+
+    /** @test */
+    public function it_confirms_that_backup_was_not_created()
+    {
+        $this->assertFalse($this->executor->isCreated());
+    }
+
+    /**
+     * @test
+     * @expectedException \RuntimeException
+     */
+    public function it_fails_during_restoring_database_without_backup()
+    {
         $this->executor->restore();
     }
 
@@ -71,6 +97,8 @@ class MySqlExecutorTest extends \PHPUnit_Framework_TestCase
         $this->command = new FakeCommand();
 
         $this->executor = new MySqlExecutor($this->connection->reveal(), $this->purger->reveal(), $this->command);
+
+        $this->refreshMySqlExecutor();
     }
 
     /**
@@ -88,5 +116,15 @@ class MySqlExecutorTest extends \PHPUnit_Framework_TestCase
     private function assertThatCommandWasCalled($expectedCommand)
     {
         $this->assertContains($expectedCommand, $this->command->getCommands());
+    }
+
+    private function refreshMySqlExecutor()
+    {
+        $reflection = new \ReflectionClass($this->executor);
+        $property = $reflection->getProperty('isCreated');
+        $property->setAccessible(true);
+
+        $property->setValue($this->executor, false);
+        $property->setAccessible(false);
     }
 }

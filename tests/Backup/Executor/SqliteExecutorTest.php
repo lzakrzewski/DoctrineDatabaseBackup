@@ -62,6 +62,25 @@ class SqliteExecutorTest extends \PHPUnit_Framework_TestCase
         $this->executor->restore();
     }
 
+    /** @test */
+    public function it_confirms_that_backup_was_created()
+    {
+        $this->filesystem->exists('/var/www/project/backup')->willReturn(true);
+        $this->filesystem->exists('/var/www/project/database/sqlite.db')->willReturn(true);
+        $this->filesystem->exists('/var/www/project/backup/123456')->willReturn(true);
+        $this->filesystem->prepareDir('/var/www/project/backup')->shouldBeCalled();
+        $this->filesystem->copy('/var/www/project/database/sqlite.db', '/var/www/project/backup/123456')->shouldBeCalled();
+        $this->executor->create();
+
+        $this->assertTrue($this->executor->isCreated());
+    }
+
+    /** @test */
+    public function it_confirms_that_backup_was_not_created()
+    {
+        $this->assertFalse($this->executor->isCreated());
+    }
+
     /**
      * {@inheritdoc}
      */

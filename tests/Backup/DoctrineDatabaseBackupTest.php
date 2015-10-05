@@ -43,6 +43,16 @@ class DoctrineDatabaseBackupTest extends \PHPUnit_Framework_TestCase
         $this->backup->clear();
     }
 
+    /** @test */
+    public function it_checks_if_backup_was_created()
+    {
+        $isCreated = (bool) rand(0, 1);
+
+        $this->executor->isCreated()->willReturn($isCreated);
+
+        $this->assertEquals($isCreated, $this->backup->isCreated());
+    }
+
     /**
      * {@inheritdoc}
      */

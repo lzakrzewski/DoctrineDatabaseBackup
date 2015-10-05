@@ -48,6 +48,20 @@ class MySqlBackupTest extends IntegrationTestCase
         $this->assertThatDatabaseIsClear();
     }
 
+    /** @test */
+    public function it_confirms_that_backup_was_created()
+    {
+        $this->backup->create();
+
+        $this->assertTrue($this->backup->isCreated());
+    }
+
+    /** @test */
+    public function it_confirms_that_backup_was_not_created()
+    {
+        $this->assertFalse($this->backup->isCreated());
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -56,6 +70,8 @@ class MySqlBackupTest extends IntegrationTestCase
         parent::setUp();
 
         $this->backup = new DoctrineDatabaseBackup($this->entityManager);
+
+        $this->refreshMySqlExecutor();
     }
 
     /**
@@ -66,5 +82,16 @@ class MySqlBackupTest extends IntegrationTestCase
         $this->backup = null;
 
         parent::tearDown();
+    }
+
+    private function refreshMySqlExecutor()
+    {
+        $executorClass = '\Lucaszz\DoctrineDatabaseBackup\Backup\Executor\MySqlExecutor';
+        $reflection = new \ReflectionClass($executorClass);
+        $property = $reflection->getProperty('isCreated');
+        $property->setAccessible(true);
+
+        $property->setValue(false);
+        $property->setAccessible(false);
     }
 }

@@ -11,6 +11,8 @@ class MySqlExecutor implements Backup
 {
     /** @var string */
     private static $dataSql;
+    /** @var bool */
+    private static $isCreated = false;
     /** @var Connection */
     private $connection;
     /** @var Purger */
@@ -36,17 +38,31 @@ class MySqlExecutor implements Backup
     public function create()
     {
         static::$dataSql = $this->dataSql();
+        static::$isCreated = true;
     }
+
     /**
      * {@inheritdoc}
      */
     public function restore()
     {
+        if (!$this->isCreated()) {
+            throw new \RuntimeException('Backup should be created before restore database.');
+        }
+
         $this->purger->purge();
 
         if (null !== static::$dataSql) {
             $this->execute(static::$dataSql);
         }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isCreated()
+    {
+        return static::$isCreated;
     }
 
     private function execute($sql)
