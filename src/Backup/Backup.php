@@ -13,11 +13,15 @@ interface Backup
 
     /**
      * This method creates backup per PHP process.
+     *
+     * @throws \RuntimeException
      */
     public function create();
 
     /**
      * This method restores DB state from backup created during current PHP process.
+     *
+     * @throws \RuntimeException
      */
     public function restore();
 }

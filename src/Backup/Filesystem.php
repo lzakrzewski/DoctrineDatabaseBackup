@@ -5,35 +5,32 @@ namespace Lucaszz\DoctrineDatabaseBackup\Backup;
 class Filesystem
 {
     /**
-     * @param $dir
+     * @param string $path
      *
      * @throws \RuntimeException
+     *
+     * @return string
      */
-    public function prepareDir($dir)
+    public function read($path)
     {
-        @mkdir($dir);
-
-        if (false === file_exists($dir)) {
-            throw new \RuntimeException(sprintf('Unable to create directory %s', $dir));
+        if (false === $path = @file_get_contents($path)) {
+            throw new \RuntimeException(sprintf('Unable to read file %s', $path));
         }
 
-        $this->cleanUp($dir);
+        return $path;
     }
 
     /**
-     * @param string $source
-     * @param string $destination
+     * @param string $path
      *
      * @throws \RuntimeException
+     *
+     * @param $contents
      */
-    public function copy($source, $destination)
+    public function write($path, $contents)
     {
-        if (false === file_exists($source)) {
-            throw new \RuntimeException(sprintf("Source file '%s' does not exist.", $source));
-        }
-
-        if (!copy($source, $destination)) {
-            throw new \RuntimeException(sprintf("Unable to copy '%s' to '%s'", $source, $destination));
+        if (false === @file_put_contents($path, $contents)) {
+            throw new \RuntimeException(sprintf('Unable to write file %s', $path));
         }
     }
 
@@ -45,18 +42,5 @@ class Filesystem
     public function exists($string)
     {
         return file_exists($string);
-    }
-
-    private function cleanUp($dir)
-    {
-        foreach (scandir($dir) as $file) {
-            $filePath = $dir.'/'.$file;
-
-            if (!is_file($filePath)) {
-                continue;
-            }
-
-            unlink($filePath);
-        }
     }
 }

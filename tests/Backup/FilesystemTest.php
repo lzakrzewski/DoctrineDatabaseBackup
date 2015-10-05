@@ -11,42 +11,39 @@ class FilesystemTest extends \PHPUnit_Framework_TestCase
     private $filesystem;
 
     /** @test */
-    public function it_creates_directory()
+    public function it_can_read_file()
     {
-        $this->filesystem->prepareDir('vfs://project/dir');
+        $this->givenFileExists('vfs://project/source.db', 'contents');
 
-        $this->assertThatDirectoryExists('vfs://project/dir');
+        $this->assertEquals('contents', $this->filesystem->read('vfs://project/source.db'));
+    }
+
+    /**
+     * @test
+     *
+     * @expectedException \RuntimeException
+     */
+    public function it_fails_during_reading_when_file_does_not_exists()
+    {
+        $this->filesystem->read('vfs://project/source.db');
     }
 
     /** @test */
-    public function it_cleans_directory()
+    public function it_can_write_new_file()
     {
-        $this->givenGarbageFileExistsInDirectory('vfs://project/dir');
+        $this->filesystem->write('vfs://project/source.db', 'contents');
 
-        $this->filesystem->prepareDir('vfs://project/dir');
-
-        $this->assertThatDirectoryIsEmpty('vfs://project/dir');
+        $this->assertEquals('contents', $this->filesystem->read('vfs://project/source.db'));
     }
 
     /** @test */
-    public function it_copies()
+    public function it_can_write_existing_file()
     {
-        $this->givenFileExists('vfs://project/source.db');
+        $this->givenFileExists('vfs://project/source.db', 'old-contents');
 
-        $this->filesystem->copy('vfs://project/source.db', 'vfs://project/destination.db');
+        $this->filesystem->write('vfs://project/source.db', 'contents');
 
-        $this->assertThatFileExists('vfs://project/destination.db');
-    }
-
-    /** @test */
-    public function it_can_copy_twice()
-    {
-        $this->givenFileExists('vfs://project/source.db');
-
-        $this->filesystem->copy('vfs://project/source.db', 'vfs://project/destination.db');
-        $this->filesystem->copy('vfs://project/source.db', 'vfs://project/destination.db');
-
-        $this->assertThatFileExists('vfs://project/destination.db');
+        $this->assertEquals('contents', $this->filesystem->read('vfs://project/source.db'));
     }
 
     /** @test */
@@ -61,16 +58,6 @@ class FilesystemTest extends \PHPUnit_Framework_TestCase
     public function it_checks_if_file_does_not_exists()
     {
         $this->assertFalse($this->filesystem->exists('vfs://project/source.db'));
-    }
-
-    /**
-     * @test
-     *
-     * @expectedException \RuntimeException
-     */
-    public function it_fails_during_creating_copy_when_source_file_does_not_exist()
-    {
-        $this->filesystem->copy('vfs://project/non-existing.db', 'vfs://project/sqlite.db');
     }
 
     /**
@@ -91,30 +78,8 @@ class FilesystemTest extends \PHPUnit_Framework_TestCase
         $this->filesystem = null;
     }
 
-    private function givenGarbageFileExistsInDirectory($directory)
+    private function givenFileExists($fileName, $contents = 'contents')
     {
-        mkdir($directory);
-
-        file_put_contents($directory.'/garbage', 'garbage-garbage');
-    }
-
-    private function givenFileExists($fileName)
-    {
-        file_put_contents($fileName, 'contents');
-    }
-
-    private function assertThatDirectoryExists($directory)
-    {
-        $this->assertTrue(file_exists($directory));
-    }
-
-    private function assertThatFileExists($fileName)
-    {
-        $this->assertTrue(file_exists($fileName));
-    }
-
-    private function assertThatDirectoryIsEmpty($directory)
-    {
-        $this->assertCount(0, array_diff(scandir($directory), array('.', '..')));
+        file_put_contents($fileName, $contents);
     }
 }

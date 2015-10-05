@@ -46,18 +46,11 @@ class ExecutorFactory
             throw new \RuntimeException('Backup for Sqlite "in_memory" is not supported.');
         }
 
-        $tmpDir = $this->tmpDir($params['path']);
-
-        return new SqliteExecutor($params['path'], new Filesystem(), new BackupFile($tmpDir));
+        return new SqliteExecutor($params['path'], new Filesystem());
     }
 
     private function mySqlExecutor()
     {
         return new MySqlExecutor($this->connection, $this->purger, new Command());
-    }
-
-    private function tmpDir($path)
-    {
-        return pathinfo($path)['dirname'];
     }
 }

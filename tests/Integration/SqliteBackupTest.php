@@ -2,7 +2,6 @@
 
 namespace Lucaszz\DoctrineDatabaseBackup\tests\Integration;
 
-use Lucaszz\DoctrineDatabaseBackup\Backup\BackupFile;
 use Lucaszz\DoctrineDatabaseBackup\Backup\DoctrineDatabaseBackup;
 use Lucaszz\DoctrineDatabaseBackup\tests\Integration\Dictionary\SqliteDictionary;
 
@@ -87,11 +86,12 @@ class SqliteBackupTest extends IntegrationTestCase
 
     private function refreshSqliteExecutor()
     {
-        $params = $this->entityManager->getConnection()->getParams();
-        $tmpDir = pathinfo($params['path'])['dirname'];
+        $executorClass = '\Lucaszz\DoctrineDatabaseBackup\Backup\Executor\SqliteExecutor';
+        $reflection = new \ReflectionClass($executorClass);
+        $property = $reflection->getProperty('contents');
+        $property->setAccessible(true);
 
-        $backupFile = new BackupFile($tmpDir);
-
-        @unlink($backupFile->path());
+        $property->setValue(null);
+        $property->setAccessible(false);
     }
 }

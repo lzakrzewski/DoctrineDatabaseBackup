@@ -3,7 +3,6 @@
 namespace Lucaszz\DoctrineDatabaseBackup\Backup\Executor;
 
 use Lucaszz\DoctrineDatabaseBackup\Backup\Backup;
-use Lucaszz\DoctrineDatabaseBackup\Backup\BackupFile;
 use Lucaszz\DoctrineDatabaseBackup\Backup\Filesystem;
 
 class SqliteExecutor implements Backup
@@ -12,19 +11,17 @@ class SqliteExecutor implements Backup
     private $sourcePath;
     /** @var Filesystem */
     private $filesystem;
-    /** @var BackupFile */
-    private $backupFile;
+    /** @var string */
+    private static $contents;
 
     /**
      * @param string     $sourcePath
      * @param Filesystem $filesystem
-     * @param BackupFile $backupFile
      */
-    public function __construct($sourcePath, Filesystem $filesystem, BackupFile $backupFile)
+    public function __construct($sourcePath, Filesystem $filesystem)
     {
         $this->sourcePath = $sourcePath;
         $this->filesystem = $filesystem;
-        $this->backupFile = $backupFile;
     }
 
     /**
@@ -38,8 +35,7 @@ class SqliteExecutor implements Backup
             throw new \RuntimeException(sprintf("Source database '%s' should exists.", $sourcePath));
         }
 
-        $this->filesystem->prepareDir($this->backupFile->dir());
-        $this->filesystem->copy($sourcePath, $this->backupFile->path());
+        static::$contents = $this->filesystem->read($sourcePath);
     }
 
     /**
@@ -51,7 +47,7 @@ class SqliteExecutor implements Backup
             throw new \RuntimeException('Backup file should be created before restore database.');
         }
 
-        $this->filesystem->copy($this->backupFile->path(), $this->sourcePath);
+        $this->filesystem->write($this->sourcePath, static::$contents);
     }
 
     /**
@@ -59,10 +55,6 @@ class SqliteExecutor implements Backup
      */
     public function isCreated()
     {
-        if (!$this->filesystem->exists($this->backupFile->dir())) {
-            return false;
-        }
-
-        return $this->filesystem->exists($this->backupFile->path());
+        return null !== static::$contents;
     }
 }
