@@ -2,37 +2,32 @@
 
 namespace Lucaszz\DoctrineDatabaseBackup\Backup\Executor;
 
+use Doctrine\DBAL\Connection;
 use Lucaszz\DoctrineDatabaseBackup\Backup\Backup;
-use Lucaszz\DoctrineDatabaseBackup\Backup\BackupFile;
-use Lucaszz\DoctrineDatabaseBackup\Backup\Filesystem;
-use Symfony\Component\Process\Process;
+use Lucaszz\DoctrineDatabaseBackup\Backup\Command;
+use Lucaszz\DoctrineDatabaseBackup\Backup\Purger;
 
 class MySqlExecutor implements Backup
 {
-    private $mysqldumpBin = 'mysqldump';
-    private $mysqlBin = 'mysql';
-
     /** @var string */
-    private $databaseName;
-    /**
-     * @var BackupFile
-     */
-    private $backupFile;
-    /**
-     * @var Filesystem
-     */
-    private $filesystem;
+    private static $dataSql;
+    /** @var Connection */
+    private $connection;
+    /** @var Purger */
+    private $purger;
+    /** @var Command */
+    private $command;
 
     /**
-     * @param string     $databaseName
-     * @param Filesystem $filesystem
-     * @param BackupFile $backupFile
+     * @param Connection $connection
+     * @param Purger     $purger
+     * @param Command    $command
      */
-    public function __construct($databaseName, Filesystem $filesystem, BackupFile $backupFile)
+    public function __construct(Connection $connection, Purger $purger, Command $command)
     {
-        $this->databaseName = $databaseName;
-        $this->filesystem = $filesystem;
-        $this->backupFile = $backupFile;
+        $this->connection = $connection;
+        $this->purger = $purger;
+        $this->command = $command;
     }
 
     /**
@@ -40,28 +35,33 @@ class MySqlExecutor implements Backup
      */
     public function create()
     {
-        $params = $this->params();
-
-        $command = sprintf('%s %s > %s', $this->mysqldumpBin, escapeshellarg($this->databaseName), escapeshellarg($this->backupFile->path()));
-        if (isset($params['host']) && strlen($params['host'])) {
-            $command .= sprintf(' --host=%s', escapeshellarg($params['host']));
-        }
-        if (isset($params['user']) && strlen($params['user'])) {
-            $command .= sprintf(' --user=%s', escapeshellarg($params['user']));
-        }
-        if (isset($params['password']) && strlen($params['password'])) {
-            $command .= sprintf(' --password=%s', escapeshellarg($params['password']));
-        }
-        $this->runCommand($command);
+        static::$dataSql = $this->dataSql();
     }
     /**
      * {@inheritdoc}
      */
     public function restore()
     {
-        $params = $this->params();
+        $this->purger->purge();
 
-        $command = sprintf('%s %s < %s', $this->mysqlBin, escapeshellarg($this->databaseName), escapeshellarg($this->backupFile->path()));
+        if (null !== static::$dataSql) {
+            $this->execute(static::$dataSql);
+        }
+    }
+
+    private function execute($sql)
+    {
+        $this->connection->beginTransaction();
+        $this->connection->exec($sql);
+
+        $this->connection->commit();
+    }
+
+    private function dataSql()
+    {
+        $params = $this->connection->getParams();
+        $command = sprintf('mysqldump %s --no-create-info ', escapeshellarg($params['dbname']));
+
         if (isset($params['host']) && strlen($params['host'])) {
             $command .= sprintf(' --host=%s', escapeshellarg($params['host']));
         }
@@ -71,32 +71,13 @@ class MySqlExecutor implements Backup
         if (isset($params['password']) && strlen($params['password'])) {
             $command .= sprintf(' --password=%s', escapeshellarg($params['password']));
         }
-        $this->runCommand($command);
-    }
 
-    /**
-     * @param string $command
-     *
-     * @return int
-     *
-     * @throws \RuntimeException
-     */
-    private function runCommand($command)
-    {
-        $process = new Process($command);
-        $process->run();
-        if (!$process->isSuccessful()) {
-            throw new \RuntimeException($process->getErrorOutput());
+        $output = $this->command->run($command);
+
+        if (false === stripos($output, 'INSERT')) {
+            return;
         }
 
-        return $process->getExitCode();
-    }
-
-    private function params()
-    {
-        return array(
-            'host' => 'localhost',
-            'user' => 'root',
-        );
+        return $output;
     }
 }

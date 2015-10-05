@@ -2,63 +2,53 @@
 
 namespace Lucaszz\DoctrineDatabaseBackup\tests\Backup\Executor;
 
+use Doctrine\DBAL\Connection;
 use Lucaszz\DoctrineDatabaseBackup\Backup\Executor\MySqlExecutor;
-use Lucaszz\DoctrineDatabaseBackup\Backup\Executor\SqliteExecutor;
-use org\bovigo\vfs\vfsStream;
+use Lucaszz\DoctrineDatabaseBackup\Backup\Purger;
+use Lucaszz\DoctrineDatabaseBackup\tests\Backup\FakeCommand;
+use Prophecy\Prophecy\ObjectProphecy;
 
 class MySqlExecutorTest extends \PHPUnit_Framework_TestCase
 {
+    /** @var ObjectProphecy|Connection */
+    private $connection;
+    /** @var ObjectProphecy|Purger */
+    private $purger;
+    /** @var FakeCommand */
+    private $command;
     /** @var MySqlExecutor */
     private $executor;
 
     /** @test */
-    public function it_creates_backup_file()
+    public function it_creates_backup()
     {
         $this->executor->create();
 
-        $this->assertThatOneBackupDatabaseFileExists();
+        $this->assertThatCommandWasCalled("mysqldump 'doctrine-database-test' --no-create-info  --user='root' --password='pass'");
     }
 
     /** @test */
-    public function if_cleanups_after_test_fails_from_past()
+    public function it_restores_database()
     {
-        $this->givenGarbageInBackupDirectoryExists();
-
         $this->executor->create();
 
-        $this->assertThatOneBackupDatabaseFileExists();
-    }
-
-    /** @test */
-    public function it_does_not_create_more_than_one_backup_file()
-    {
-        $this->givenSourceDatabaseExists();
-
-        $this->executor->create();
-        $this->executor->create();
-
-        $this->assertThatOneBackupDatabaseFileExists();
-    }
-
-    /** @test */
-    public function it_restores_database_from_backup_file()
-    {
-        $this->givenSourceDatabaseExists();
-
-        $this->executor->create();
+        $this->purger->purge()->shouldBeCalled();
 
         $this->executor->restore();
-
-        $this->assertThatOneBackupDatabaseFileExists();
     }
 
-    /**
-     * @test
-     *
-     * @expectedException \RuntimeException
-     */
-    public function it_fails_when_backup_database_file_does_not_exists()
+    /** @test */
+    public function it_restores_database_with_data()
     {
+        $this->command->setExpectedOutput('INSERT INTO table VALUES (1, 2, 3, 4)');
+        $this->executor->create();
+
+        $this->purger->purge()->shouldBeCalled();
+
+        $this->connection->beginTransaction()->shouldBeCalled();
+        $this->connection->exec('INSERT INTO table VALUES (1, 2, 3, 4)')->shouldBeCalled();
+        $this->connection->commit()->shouldBeCalled();
+
         $this->executor->restore();
     }
 
@@ -67,10 +57,20 @@ class MySqlExecutorTest extends \PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->markTestIncomplete();
-        vfsStream::setup('project');
+        $this->connection = $this->prophesize('\Doctrine\DBAL\Connection');
+        $this->purger = $this->prophesize('\Lucaszz\DoctrineDatabaseBackup\Backup\Purger');
 
-        $this->executor = new MySqlExecutor('test-database-name');
+        $params = array(
+            'driver' => 'pdo_mysql',
+            'user' => 'root',
+            'password' => 'pass',
+            'dbname' => 'doctrine-database-test',
+        );
+
+        $this->connection->getParams()->willReturn($params);
+        $this->command = new FakeCommand();
+
+        $this->executor = new MySqlExecutor($this->connection->reveal(), $this->purger->reveal(), $this->command);
     }
 
     /**
@@ -78,23 +78,15 @@ class MySqlExecutorTest extends \PHPUnit_Framework_TestCase
      */
     protected function tearDown()
     {
+        $this->connection = null;
+        $this->purger = null;
+        $this->command = null;
+
         $this->executor = null;
     }
 
-    private function givenSourceDatabaseExists()
+    private function assertThatCommandWasCalled($expectedCommand)
     {
-        file_put_contents('vfs://project/sqlite.db', 'database-contents');
-    }
-
-    private function assertThatOneBackupDatabaseFileExists()
-    {
-        $this->assertCount(1, array_diff(scandir('vfs://project/'.SqliteExecutor::BACKUP_DIR), array('.', '..')));
-    }
-
-    private function givenGarbageInBackupDirectoryExists()
-    {
-        mkdir('vfs://project/'.SqliteExecutor::BACKUP_DIR);
-
-        file_put_contents('vfs://project/'.SqliteExecutor::BACKUP_DIR.'/garbage.db', 'garbage-garbage');
+        $this->assertContains($expectedCommand, $this->command->getCommands());
     }
 }
