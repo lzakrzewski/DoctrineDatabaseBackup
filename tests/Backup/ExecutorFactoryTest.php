@@ -7,6 +7,7 @@ use Doctrine\DBAL\Platforms\MySqlPlatform;
 use Doctrine\DBAL\Platforms\OraclePlatform;
 use Doctrine\DBAL\Platforms\SqlitePlatform;
 use Lucaszz\DoctrineDatabaseBackup\Backup\ExecutorFactory;
+use Lucaszz\DoctrineDatabaseBackup\Backup\Purger;
 use Prophecy\Prophecy\ObjectProphecy;
 
 class ExecutorFactoryTest extends \PHPUnit_Framework_TestCase
@@ -19,6 +20,8 @@ class ExecutorFactoryTest extends \PHPUnit_Framework_TestCase
     private $unknownPlatform;
     /** @var ObjectProphecy|Connection */
     private $connection;
+    /** @var ObjectProphecy|Purger */
+    private $purger;
     /** @var ObjectProphecy|ExecutorFactory */
     private $factory;
 
@@ -76,8 +79,9 @@ class ExecutorFactoryTest extends \PHPUnit_Framework_TestCase
         $this->mySqlPlatform = $this->prophesize('Doctrine\DBAL\Platforms\MySqlPlatform');
         $this->unknownPlatform = $this->prophesize('Doctrine\DBAL\Platforms\OraclePlatform');
         $this->connection = $this->prophesize('Doctrine\DBAL\Connection');
+        $this->purger = $this->prophesize('Lucaszz\DoctrineDatabaseBackup\Backup\Purger');
 
-        $this->factory = new ExecutorFactory($this->connection->reveal());
+        $this->factory = new ExecutorFactory($this->connection->reveal(), $this->purger->reveal());
     }
 
     /**
@@ -87,7 +91,9 @@ class ExecutorFactoryTest extends \PHPUnit_Framework_TestCase
     {
         $this->sqlitePlatform = null;
         $this->mySqlPlatform = null;
+        $this->unknownPlatform = null;
         $this->connection = null;
+        $this->purger = null;
         $this->factory = null;
     }
 }
