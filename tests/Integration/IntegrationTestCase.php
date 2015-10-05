@@ -8,43 +8,14 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Doctrine\ORM\Tools\Setup;
-use Lucaszz\DoctrineDatabaseBackup\Backup\DoctrineDatabaseBackup;
 use Lucaszz\DoctrineDatabaseBackup\tests\Integration\Entity\TestProduct;
 
-abstract class BackupTestCase extends \PHPUnit_Framework_TestCase
+abstract class IntegrationTestCase extends \PHPUnit_Framework_TestCase
 {
     /** @var EntityManager */
     protected $entityManager;
     /** @var EntityRepository */
-    private $repository;
-    /** @var DoctrineDatabaseBackup */
-    private $backup;
-
-    /** @test */
-    public function it_can_restore_clear_database()
-    {
-        $this->givenDatabaseIsClear();
-
-        $this->backup->create();
-        $this->addProduct();
-
-        $this->backup->restore();
-
-        $this->assertThatDatabaseIsClear();
-    }
-
-    /** @test */
-    public function it_can_restore_database_with_data()
-    {
-        $this->givenDatabaseContainsProducts(5);
-
-        $this->backup->create();
-        $this->addProduct();
-
-        $this->backup->restore();
-
-        $this->assertThatDatabaseContainProducts(5);
-    }
+    protected $repository;
 
     /**
      * {@inheritdoc}
@@ -56,7 +27,6 @@ abstract class BackupTestCase extends \PHPUnit_Framework_TestCase
         $this->setupDatabase();
 
         $this->repository = $this->entityManager->getRepository($this->productClass());
-        $this->backup = new DoctrineDatabaseBackup($this->entityManager->getConnection());
     }
 
     /**
@@ -66,7 +36,6 @@ abstract class BackupTestCase extends \PHPUnit_Framework_TestCase
     {
         $this->entityManager = null;
         $this->repository = null;
-        $this->backup = null;
     }
 
     /**
@@ -87,7 +56,7 @@ abstract class BackupTestCase extends \PHPUnit_Framework_TestCase
     /**
      * @return TestProduct
      */
-    private function productInstance()
+    protected function productInstance()
     {
         return new TestProduct(uniqid(), rand(1, 1000) / 3);
     }
@@ -100,17 +69,17 @@ abstract class BackupTestCase extends \PHPUnit_Framework_TestCase
         return get_class($this->productInstance());
     }
 
-    private function addProduct()
+    protected function addProduct()
     {
         $this->entityManager->persist($this->productInstance());
         $this->entityManager->flush();
     }
 
-    private function givenDatabaseIsClear()
+    protected function givenDatabaseIsClear()
     {
     }
 
-    private function givenDatabaseContainsProducts($productsCount)
+    protected function givenDatabaseContainsProducts($productsCount)
     {
         $this->givenDatabaseIsClear();
 
@@ -119,12 +88,12 @@ abstract class BackupTestCase extends \PHPUnit_Framework_TestCase
         }
     }
 
-    private function assertThatDatabaseContainProducts($expectedProductsCount)
+    protected function assertThatDatabaseContainProducts($expectedProductsCount)
     {
         $this->assertCount($expectedProductsCount, $this->repository->findAll());
     }
 
-    private function assertThatDatabaseIsClear()
+    protected function assertThatDatabaseIsClear()
     {
         $this->assertEmpty($this->repository->findAll());
     }

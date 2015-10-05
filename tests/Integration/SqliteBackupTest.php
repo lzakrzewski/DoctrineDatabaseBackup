@@ -2,38 +2,69 @@
 
 namespace Lucaszz\DoctrineDatabaseBackup\tests\Integration;
 
-use Doctrine\DBAL\DriverManager;
-use Doctrine\ORM\Tools\SchemaTool;
+use Lucaszz\DoctrineDatabaseBackup\Backup\DoctrineDatabaseBackup;
+use Lucaszz\DoctrineDatabaseBackup\tests\Integration\Dictionary\SqliteDictionary;
 
-class SqliteBackupTest extends BackupTestCase
+class SqliteBackupTest extends IntegrationTestCase
 {
-    /**
-     * {@inheritdoc}
-     */
-    protected function getParams()
+    use SqliteDictionary;
+
+    /** @var DoctrineDatabaseBackup */
+    private $backup;
+
+    /** @test */
+    public function it_can_restore_clear_database()
     {
-        return array(
-            'driver' => 'pdo_sqlite',
-            'user' => 'root',
-            'password' => '',
-            'path' => __DIR__.'/database/sqlite.db',
-        );
+        $this->givenDatabaseIsClear();
+
+        $this->backup->create();
+        $this->addProduct();
+
+        $this->backup->restore();
+
+        $this->assertThatDatabaseIsClear();
+    }
+
+    /** @test */
+    public function it_can_restore_database_with_data()
+    {
+        $this->givenDatabaseContainsProducts(5);
+
+        $this->backup->create();
+        $this->addProduct();
+
+        $this->backup->restore();
+
+        $this->assertThatDatabaseContainProducts(5);
+    }
+
+    /** @test */
+    public function it_can_clear_database()
+    {
+        $this->givenDatabaseContainsProducts(5);
+
+        $this->backup->clear();
+
+        $this->assertThatDatabaseIsClear();
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function setupDatabase()
+    protected function setUp()
     {
-        $params = $this->getParams();
+        parent::setUp();
 
-        $tmpConnection = DriverManager::getConnection($params);
-        $tmpConnection->getSchemaManager()->createDatabase($params['path']);
+        $this->backup = new DoctrineDatabaseBackup($this->entityManager);
+    }
 
-        $schemaTool = new SchemaTool($this->entityManager);
-        $schemaTool->dropDatabase();
+    /**
+     * {@inheritdoc}
+     */
+    protected function tearDown()
+    {
+        $this->backup = null;
 
-        $class = $this->productClass();
-        $schemaTool->createSchema(array($this->entityManager->getClassMetadata($class)));
+        parent::tearDown();
     }
 }
