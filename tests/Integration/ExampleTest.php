@@ -34,6 +34,15 @@ class ExampleTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * Before first test of PHP process database should be created.
+     */
+    public static function setUpBeforeClass()
+    {
+        $entityManager = self::createEntityManager();
+        self::setupDatabase($entityManager);
+    }
+
+    /**
      * {@inheritdoc}
      */
     protected function setUp()
@@ -58,15 +67,6 @@ class ExampleTest extends \PHPUnit_Framework_TestCase
     protected function tearDown()
     {
         $this->entityManager = null;
-    }
-
-    /**
-     * Before first test of PHP process database should be created.
-     */
-    public static function setUpBeforeClass()
-    {
-        $entityManager = self::createEntityManager();
-        self::setupDatabase($entityManager);
     }
 
     /**

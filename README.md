@@ -6,6 +6,7 @@ Description
 --------
 
 DoctrineDatabaseBackup is simple library for speed up tests in your app.
+It could be used for **PHPUnit** tests or **Behat** tests running from command line.
 My target was to avoid wasting time for dropping/creating or purging database for each test, so I optimized it.
 From my own benchmarks I can see that DoctrineDatabaseBackup can reduce the time of execution tests up to 3 times.
 
@@ -21,10 +22,10 @@ Requirements
 
 Features
 --------
-- It supports SqlitePlatform and MySqlPlatform,
+- It supports **SqlitePlatform** and **MySqlPlatform**,
 - It can create database backup per PHP process,
 - It can clear database in fast way,
-- It can restore database from backup in every test,
+- It can restore database from backup before every test,
 - Because I decided to expose methods "isCreated", "create", "restore" and "clearDatabase" usages of this library can be very various.
 
 Installation
@@ -59,7 +60,7 @@ Usage (PHPUnit example)
 ```
 [Full working example](https://github.com/Lucaszz/DoctrineDatabaseBackup/blob/master/tests/Integration/ExampleTest.php)
 
-Notice that before first test of PHP process database should be created.
+**Notice that before first test of PHP process database should be created.**
 
 Behat example
 --------
