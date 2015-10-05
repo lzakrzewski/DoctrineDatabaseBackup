@@ -1,11 +1,11 @@
 {
   "name": "lucaszz/doctrine-database-backup",
   "type": "library",
-  "description": "Doctrine Database back",
+  "description": "Doctrine Database Backup",
   "require": {
     "php": ">=5.4",
     "doctrine/orm": "~2.3",
-    "symfony/process": "~2.7"
+    "symfony/process": "~2.3"
   },
   "license": "MIT",
   "authors": [
