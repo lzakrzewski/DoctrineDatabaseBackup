@@ -2,26 +2,23 @@
 
 namespace Lucaszz\DoctrineDatabaseBackup\Backup;
 
-use Doctrine\DBAL\Connection;
+use Doctrine\ORM\EntityManager;
 
 class DoctrineDatabaseBackup implements Backup
 {
     /** @var Backup */
     private $executor;
 
+    /** @var Purger */
+    private $purger;
+
     /**
-     * @param Connection           $connection
-     * @param ExecutorFactory|null $factory
+     * @param EntityManager $entityManager
      */
-    public function __construct(Connection $connection, ExecutorFactory $factory = null)
+    public function __construct(EntityManager $entityManager)
     {
-        if (null === $factory) {
-            $this->executor = (new ExecutorFactory($connection))->create();
-
-            return;
-        }
-
-        $this->executor = $factory->create();
+        $this->purger = new Purger($entityManager);
+        $this->executor = (new ExecutorFactory($entityManager->getConnection(), $this->purger))->create();
     }
 
     /**
@@ -38,5 +35,26 @@ class DoctrineDatabaseBackup implements Backup
     public function restore()
     {
         $this->executor->restore();
+    }
+
+    public function clear()
+    {
+        $this->purger->purge();
+    }
+
+    /**
+     * @param Backup $executor
+     */
+    public function setExecutor(Backup $executor)
+    {
+        $this->executor = $executor;
+    }
+
+    /**
+     * @param Purger $purger
+     */
+    public function setPurger(Purger $purger)
+    {
+        $this->purger = $purger;
     }
 }

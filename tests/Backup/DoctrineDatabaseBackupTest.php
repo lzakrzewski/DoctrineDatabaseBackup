@@ -2,41 +2,45 @@
 
 namespace Lucaszz\DoctrineDatabaseBackup\tests\Backup;
 
-use Doctrine\DBAL\Connection;
+use Doctrine\ORM\EntityManager;
 use Lucaszz\DoctrineDatabaseBackup\Backup\Backup;
 use Lucaszz\DoctrineDatabaseBackup\Backup\DoctrineDatabaseBackup;
-use Lucaszz\DoctrineDatabaseBackup\Backup\ExecutorFactory;
+use Lucaszz\DoctrineDatabaseBackup\Backup\Purger;
 use Prophecy\Prophecy\ObjectProphecy;
 
 class DoctrineDatabaseBackupTest extends \PHPUnit_Framework_TestCase
 {
-    /** @var ObjectProphecy|Connection */
-    private $connection;
-    /** @var ObjectProphecy|ExecutorFactory */
-    private $factory;
+    /** @var ObjectProphecy|EntityManager */
+    private $entityManager;
     /** @var ObjectProphecy|Backup */
     private $executor;
+    /** @var ObjectProphecy|Purger */
+    private $purger;
+    /** @var DoctrineDatabaseBackup */
+    private $backup;
 
     /** @test */
     public function it_creates_backup()
     {
         $this->executor->create()->shouldBeCalled();
-        $this->factory->create()->willReturn($this->executor->reveal());
 
-        $backup = new DoctrineDatabaseBackup($this->connection->reveal(), $this->factory->reveal());
-
-        $backup->create();
+        $this->backup->create();
     }
 
     /** @test */
     public function it_restores_database_from_backup()
     {
         $this->executor->restore()->shouldBeCalled();
-        $this->factory->create()->willReturn($this->executor->reveal());
 
-        $backup = new DoctrineDatabaseBackup($this->connection->reveal(), $this->factory->reveal());
+        $this->backup->restore();
+    }
 
-        $backup->restore();
+    /** @test */
+    public function it_clears_database()
+    {
+        $this->purger->purge()->shouldBeCalled();
+
+        $this->backup->clear();
     }
 
     /**
@@ -44,9 +48,21 @@ class DoctrineDatabaseBackupTest extends \PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->connection = $this->prophesize('\Doctrine\DBAL\Connection');
-        $this->factory = $this->prophesize('Lucaszz\DoctrineDatabaseBackup\Backup\ExecutorFactory');
+        $connection = $this->prophesize('\Doctrine\DBAL\Connection');
+        $platform = $this->prophesize('\Doctrine\DBAL\Platforms\MySqlPlatform');
+
+        $connection->getDatabasePlatform()->willReturn($platform);
+
+        $this->entityManager = $this->prophesize('\Doctrine\ORM\EntityManager');
+        $this->entityManager->getConnection()->willReturn($connection->reveal());
+
         $this->executor = $this->prophesize('Lucaszz\DoctrineDatabaseBackup\Backup\Backup');
+        $this->purger = $this->prophesize('Lucaszz\DoctrineDatabaseBackup\Backup\Purger');
+
+        $this->backup = new DoctrineDatabaseBackup($this->entityManager->reveal());
+
+        $this->backup->setExecutor($this->executor->reveal());
+        $this->backup->setPurger($this->purger->reveal());
     }
 
     /**
@@ -54,8 +70,9 @@ class DoctrineDatabaseBackupTest extends \PHPUnit_Framework_TestCase
      */
     protected function tearDown()
     {
-        $this->connection = null;
-        $this->factory = null;
+        $this->entityManager = null;
         $this->executor = null;
+        $this->purger = null;
+        $this->backup = null;
     }
 }
