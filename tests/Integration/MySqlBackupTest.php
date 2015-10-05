@@ -43,7 +43,7 @@ class MySqlBackupTest extends IntegrationTestCase
     {
         $this->givenDatabaseContainsProducts(5);
 
-        $this->backup->clear();
+        $this->backup->clearDatabase();
 
         $this->assertThatDatabaseIsClear();
     }

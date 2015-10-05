@@ -40,7 +40,7 @@ class DoctrineDatabaseBackupTest extends \PHPUnit_Framework_TestCase
     {
         $this->purger->purge()->shouldBeCalled();
 
-        $this->backup->clear();
+        $this->backup->clearDatabase();
     }
 
     /** @test */
