@@ -19,8 +19,8 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 
 class Purger
 {
-    /** @var array */
-    private static $purgeSqls = array();
+    /** @var string */
+    private static $purgeSql;
     /** @var EntityManager */
     private $entityManager;
 
@@ -34,28 +34,26 @@ class Purger
 
     public function purge()
     {
-        if (empty(static::$purgeSqls)) {
-            static::$purgeSqls = $this->purgeSql();
+        if (null === static::$purgeSql) {
+            static::$purgeSql = $this->purgeSql();
         }
 
-        $this->execute(static::$purgeSqls);
+        $this->execute(static::$purgeSql);
     }
 
-    private function execute(array $sqls)
+    private function execute($sql)
     {
         $connection = $this->entityManager->getConnection();
         $connection->beginTransaction();
 
-        foreach ($sqls as $sql) {
-            $connection->exec($sql);
-        }
+        $connection->exec($sql);
 
         $connection->commit();
     }
 
     private function purgeSql()
     {
-        $sql = array();
+        $sql = '';
         $classes = array();
         $metadatas = $this->entityManager->getMetadataFactory()->getAllMetadata();
 
@@ -88,7 +86,7 @@ class Purger
         }
 
         foreach ($orderedTables as $tbl) {
-            $sql[] = sprintf('DELETE FROM %s;', $tbl);
+            $sql .= sprintf('DELETE FROM %s;', $tbl);
         }
 
         return $sql;
