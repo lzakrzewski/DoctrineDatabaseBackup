@@ -5,6 +5,7 @@ namespace Lucaszz\DoctrineDatabaseBackup\Backup;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Platforms\MySqlPlatform;
 use Doctrine\DBAL\Platforms\SqlitePlatform;
+use Lucaszz\DoctrineDatabaseBackup\Backup\Executor\Executor;
 use Lucaszz\DoctrineDatabaseBackup\Backup\Executor\MySqlExecutor;
 use Lucaszz\DoctrineDatabaseBackup\Backup\Executor\SqliteExecutor;
 
@@ -25,6 +26,9 @@ class ExecutorFactory
         $this->purger = $purger;
     }
 
+    /**
+     * @return Executor
+     */
     public function create()
     {
         if ($this->connection->getDatabasePlatform() instanceof SqlitePlatform) {

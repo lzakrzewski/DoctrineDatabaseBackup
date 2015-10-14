@@ -3,12 +3,12 @@
 namespace Lucaszz\DoctrineDatabaseBackup\Backup;
 
 use Doctrine\ORM\EntityManager;
+use Lucaszz\DoctrineDatabaseBackup\Backup\Executor\Executor;
 
-class DoctrineDatabaseBackup implements Backup
+class DoctrineDatabaseBackup
 {
-    /** @var Backup */
+    /** @var Executor */
     private $executor;
-
     /** @var Purger */
     private $purger;
 
@@ -21,39 +21,20 @@ class DoctrineDatabaseBackup implements Backup
         $this->executor = (new ExecutorFactory($entityManager->getConnection(), $this->purger))->create();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function create()
+    public function restoreClearDatabase()
     {
-        $this->executor->create();
-    }
+        if (!$this->executor->isBackupCreated()) {
+            $this->purger->purge();
+            $this->executor->create();
+        }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function restore()
-    {
         $this->executor->restore();
     }
 
     /**
-     * {@inheritdoc}
+     * @param Executor $executor
      */
-    public function isCreated()
-    {
-        return $this->executor->isCreated();
-    }
-
-    public function clearDatabase()
-    {
-        $this->purger->purge();
-    }
-
-    /**
-     * @param Backup $executor
-     */
-    public function setExecutor(Backup $executor)
+    public function setExecutor(Executor $executor)
     {
         $this->executor = $executor;
     }
@@ -64,5 +45,21 @@ class DoctrineDatabaseBackup implements Backup
     public function setPurger(Purger $purger)
     {
         $this->purger = $purger;
+    }
+
+    /**
+     * @return Executor
+     */
+    public function getExecutor()
+    {
+        return $this->executor;
+    }
+
+    /**
+     * @return Purger
+     */
+    public function getPurger()
+    {
+        return $this->purger;
     }
 }
