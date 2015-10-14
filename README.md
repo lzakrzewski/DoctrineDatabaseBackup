@@ -8,8 +8,8 @@ My target was to avoid wasting time for dropping/creating or purging database fo
 
 This library puts contents of database to memory and share it between every tests.
 
-**Notice** I don't recommend to use this library with large fixtures because it can cause huge memory usage.
-I prefer to run tests with minimal database data because it is more readable for me and it have better performance.
+**Notice:** I don't recommend to use this library with large fixtures because it can cause huge memory usage.
+I prefer to run tests with minimal database setup because it is more readable for me and it have better performance.
 
 Requirements
 ------------
@@ -25,7 +25,7 @@ Features
 --------
 - It supports **SqlitePlatform** and **MySqlPlatform**,
 - It can create database backup per PHP process,
-- It can clear database in fast way,
+- It can purge database in fast way,
 - It can restore database from backup before every test,
 - It can restore clear database before every test.
 
@@ -40,78 +40,59 @@ composer require lucaszz/doctrine-database-backup "~1.0"
 Basic usage (PHPUnit example)
 --------
 ```php
-//Incomplete...
-    /**
-     * {@inheritdoc}
-     */
-    protected function setUp()
-    {
-        parent::setUp();
+/** {@inheritdoc} */
+protected function setUp()
+{
+    parent::setUp();
 
-        $this->entityManager = $this->createEntityManager();
+    $this->entityManager = $this->createEntityManager();
 
-        $backup = new DoctrineDatabaseBackup($this->entityManager);
-
-        if (!$backup->isCreated()) {
-            $backup->clearDatabase();
-            $backup->create();
-        }
-
-        $backup->restore();
-    }
+    $backup = new DoctrineDatabaseBackup($this->entityManager);
+    $backup->restoreClearDatabase();
+}
 ```
 
 This database setup prepares clear database before every test.
-
-
+[Full working example](https://github.com/Lucaszz/DoctrineDatabaseBackup/blob/master/tests/Integration/BasicPHPUnitUsageExampleTest.php).
 
 Advanced usage (PHPUnit example)
 --------
 ```php
-//Incomplete...
-    /**
-     * {@inheritdoc}
-     */
-    protected function setUp()
-    {
-        parent::setUp();
+/** {@inheritdoc} */
+protected function setUp()
+{
+    parent::setUp();
 
-        $this->entityManager = $this->createEntityManager();
+    $this->entityManager = $this->createEntityManager();
+    $backup = new DoctrineDatabaseBackup($this->entityManager);
+    
+    if (!$backup->getExecutor()->isBackupCreated()) {
+        $backup->getPurger()->purge();
 
-        $backup = new DoctrineDatabaseBackup($this->entityManager);
+        //your fixtures
+        $this->entityManager->persist(new TestProduct('Iron', 99));
+        $this->entityManager->flush();
 
-        if (!$backup->isCreated()) {
-            $backup->clearDatabase();
-            $backup->create();
-        }
-
-        $backup->restore();
+        $backup->getExecutor()->create();
     }
+
+    $backup->getExecutor()->restore();
+}
 ```
 
 This database setup database with your fixtures before every test.
+[Full working example](https://github.com/Lucaszz/DoctrineDatabaseBackup/blob/master/tests/Integration/AdvancedPHPUnitUsageExampleTest.php).
 
-[Full working examples](https://github.com/Lucaszz/DoctrineDatabaseBackup/blob/master/tests/Integration/ExampleTest.php)
-
-**Notice that before first test of PHP process database should be created.**
+**Notice:** that before first test of PHP process database should be created.
 
 Behat example
 --------
 ```php
-//Incomplete...
-    /**
-     * @BeforeScenario
-     */
-    public function restoreDatabase()
-    {
-        // "getEntityManager" is your own getter for EntityManager
-        $backup = new DoctrineDatabaseBackup($this->getEntityManager());
-
-        if (!$backup->isCreated()) {
-            $backup->clearDatabase();
-            $backup->create();
-        }
-
-        $backup->restore();
-    }
+/** @BeforeScenario*/
+public function restoreDatabase()
+{
+    // "getEntityManager" is your own getter for EntityManager
+    $backup = new DoctrineDatabaseBackup($this->getEntityManager());
+    $backup->restoreClearDatabase();
+}
 ```

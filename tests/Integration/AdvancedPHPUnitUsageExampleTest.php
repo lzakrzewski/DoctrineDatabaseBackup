@@ -10,26 +10,24 @@ use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\ORM\Tools\Setup;
 use Lucaszz\DoctrineDatabaseBackup\Backup\DoctrineDatabaseBackup;
+use Lucaszz\DoctrineDatabaseBackup\Backup\Executor\SqliteExecutor;
 use Lucaszz\DoctrineDatabaseBackup\tests\Integration\Entity\TestProduct;
 
-class ExampleTest extends \PHPUnit_Framework_TestCase
+class AdvancedPHPUnitUsageExampleTest extends \PHPUnit_Framework_TestCase
 {
     /** @var EntityManager */
     private $entityManager;
 
-    public function testThatDatabaseContainsProduct()
+    public function testThatItAddsProduct()
     {
         $this->entityManager->persist(new TestProduct('Teapot', 25));
         $this->entityManager->flush();
 
-        $this->assertCount(1, $this->entityManager->getRepository('\Lucaszz\DoctrineDatabaseBackup\tests\Integration\Entity\TestProduct')->findAll());
+        $this->assertCount(2, $this->entityManager->getRepository('\Lucaszz\DoctrineDatabaseBackup\tests\Integration\Entity\TestProduct')->findAll());
     }
 
-    public function testThatDatabaseIsClearBeforeNextTest()
+    public function testThatDatabaseContainsFixtures()
     {
-        $this->entityManager->persist(new TestProduct('Iron', 99));
-        $this->entityManager->flush();
-
         $this->assertCount(1, $this->entityManager->getRepository('\Lucaszz\DoctrineDatabaseBackup\tests\Integration\Entity\TestProduct')->findAll());
     }
 
@@ -40,30 +38,33 @@ class ExampleTest extends \PHPUnit_Framework_TestCase
     {
         $entityManager = self::createEntityManager();
         self::setupDatabase($entityManager);
+
+        //Should be called only if another test in current PHP process created backup.
+        SqliteExecutor::clearMemory();
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    /** {@inheritdoc} */
     protected function setUp()
     {
         parent::setUp();
 
         $this->entityManager = $this->createEntityManager();
-
         $backup = new DoctrineDatabaseBackup($this->entityManager);
 
-        if (!$backup->isCreated()) {
-            $backup->clearDatabase();
-            $backup->create();
+        if (!$backup->getExecutor()->isBackupCreated()) {
+            $backup->getPurger()->purge();
+
+            //your fixtures
+            $this->entityManager->persist(new TestProduct('Iron', 99));
+            $this->entityManager->flush();
+
+            $backup->getExecutor()->create();
         }
 
-        $backup->restore();
+        $backup->getExecutor()->restore();
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    /** {@inheritdoc} */
     protected function tearDown()
     {
         $this->entityManager = null;
@@ -87,7 +88,7 @@ class ExampleTest extends \PHPUnit_Framework_TestCase
     /**
      * Example of setup database before test.
      */
-    private function setupDatabase(EntityManager $entityManager)
+    private static function setupDatabase(EntityManager $entityManager)
     {
         $params = self::getParams();
 
