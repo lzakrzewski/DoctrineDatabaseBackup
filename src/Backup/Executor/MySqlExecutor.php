@@ -3,11 +3,10 @@
 namespace Lucaszz\DoctrineDatabaseBackup\Backup\Executor;
 
 use Doctrine\DBAL\Connection;
-use Lucaszz\DoctrineDatabaseBackup\Backup\Backup;
 use Lucaszz\DoctrineDatabaseBackup\Backup\Command;
 use Lucaszz\DoctrineDatabaseBackup\Backup\Purger;
 
-class MySqlExecutor implements Backup
+class MySqlExecutor implements Executor
 {
     /** @var string */
     private static $dataSql;
@@ -32,21 +31,17 @@ class MySqlExecutor implements Backup
         $this->command = $command;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    /** {@inheritdoc} */
     public function create()
     {
         static::$dataSql = $this->dataSql();
         static::$isCreated = true;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    /** {@inheritdoc} */
     public function restore()
     {
-        if (!$this->isCreated()) {
+        if (!$this->isBackupCreated()) {
             throw new \RuntimeException('Backup should be created before restore database.');
         }
 
@@ -57,12 +52,18 @@ class MySqlExecutor implements Backup
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function isCreated()
+    /** {@inheritdoc} */
+    public function isBackupCreated()
     {
         return static::$isCreated;
+    }
+
+    /** {@inheritdoc} */
+    public static function clearMemory()
+    {
+        static::$dataSql = null;
+        /** @var bool */
+        static::$isCreated = false;
     }
 
     private function execute($sql)

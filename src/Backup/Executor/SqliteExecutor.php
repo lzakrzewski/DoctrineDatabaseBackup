@@ -2,10 +2,9 @@
 
 namespace Lucaszz\DoctrineDatabaseBackup\Backup\Executor;
 
-use Lucaszz\DoctrineDatabaseBackup\Backup\Backup;
 use Lucaszz\DoctrineDatabaseBackup\Backup\Filesystem;
 
-class SqliteExecutor implements Backup
+class SqliteExecutor implements Executor
 {
     /** @var string */
     private $sourcePath;
@@ -43,7 +42,7 @@ class SqliteExecutor implements Backup
      */
     public function restore()
     {
-        if (!$this->isCreated()) {
+        if (!$this->isBackupCreated()) {
             throw new \RuntimeException('Backup file should be created before restore database.');
         }
 
@@ -53,8 +52,14 @@ class SqliteExecutor implements Backup
     /**
      * {@inheritdoc}
      */
-    public function isCreated()
+    public function isBackupCreated()
     {
         return null !== static::$contents;
+    }
+
+    /** {@inheritdoc} */
+    public static function clearMemory()
+    {
+        static::$contents = null;
     }
 }
