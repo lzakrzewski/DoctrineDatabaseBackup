@@ -3,6 +3,7 @@
 namespace Lucaszz\DoctrineDatabaseBackup\tests\Integration;
 
 use Lucaszz\DoctrineDatabaseBackup\Backup\DoctrineDatabaseBackup;
+use Lucaszz\DoctrineDatabaseBackup\Backup\Executor\SqliteExecutor;
 use Lucaszz\DoctrineDatabaseBackup\tests\Integration\Dictionary\SqliteDictionary;
 
 class SqliteBackupTest extends IntegrationTestCase
@@ -17,10 +18,10 @@ class SqliteBackupTest extends IntegrationTestCase
     {
         $this->givenDatabaseIsClear();
 
-        $this->backup->create();
+        $this->backup->getExecutor()->create();
         $this->addProduct();
 
-        $this->backup->restore();
+        $this->backup->restoreClearDatabase();
 
         $this->assertThatDatabaseIsClear();
     }
@@ -30,10 +31,10 @@ class SqliteBackupTest extends IntegrationTestCase
     {
         $this->givenDatabaseContainsProducts(5);
 
-        $this->backup->create();
+        $this->backup->getExecutor()->create();
         $this->addProduct();
 
-        $this->backup->restore();
+        $this->backup->getExecutor()->restore();
 
         $this->assertThatDatabaseContainProducts(5);
     }
@@ -43,7 +44,7 @@ class SqliteBackupTest extends IntegrationTestCase
     {
         $this->givenDatabaseContainsProducts(5);
 
-        $this->backup->clearDatabase();
+        $this->backup->restoreClearDatabase();
 
         $this->assertThatDatabaseIsClear();
     }
@@ -51,32 +52,28 @@ class SqliteBackupTest extends IntegrationTestCase
     /** @test */
     public function it_confirms_that_backup_was_created()
     {
-        $this->backup->create();
+        $this->backup->getExecutor()->create();
 
-        $this->assertTrue($this->backup->isCreated());
+        $this->assertTrue($this->backup->getExecutor()->isBackupCreated());
     }
 
     /** @test */
     public function it_confirms_that_backup_was_not_created()
     {
-        $this->assertFalse($this->backup->isCreated());
+        $this->assertFalse($this->backup->getExecutor()->isBackupCreated());
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    /** {@inheritdoc} */
     protected function setUp()
     {
         parent::setUp();
 
         $this->backup = new DoctrineDatabaseBackup($this->entityManager);
 
-        $this->refreshSqliteExecutor();
+        $this->givenMemoryIsClear();
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    /** {@inheritdoc} */
     protected function tearDown()
     {
         $this->backup = null;
@@ -84,14 +81,8 @@ class SqliteBackupTest extends IntegrationTestCase
         parent::tearDown();
     }
 
-    private function refreshSqliteExecutor()
+    private function givenMemoryIsClear()
     {
-        $executorClass = '\Lucaszz\DoctrineDatabaseBackup\Backup\Executor\SqliteExecutor';
-        $reflection = new \ReflectionClass($executorClass);
-        $property = $reflection->getProperty('contents');
-        $property->setAccessible(true);
-
-        $property->setValue(null);
-        $property->setAccessible(false);
+        SqliteExecutor::clearMemory();
     }
 }
