@@ -20,6 +20,7 @@ class SqliteExecutorTest extends \PHPUnit_Framework_TestCase
      */
     public function it_fails_when_source_database_file_does_not_exists()
     {
+        $this->givenMemoryIsClear();
         $this->filesystem->exists('/var/www/project/database/sqlite.db')->willReturn(false);
 
         $this->executor->create();
@@ -28,6 +29,7 @@ class SqliteExecutorTest extends \PHPUnit_Framework_TestCase
     /** @test */
     public function it_creates_database_backup()
     {
+        $this->givenMemoryIsClear();
         $this->filesystem->exists('/var/www/project/database/sqlite.db')->willReturn(true);
         $this->filesystem->read('/var/www/project/database/sqlite.db')->willReturn('contents');
 
@@ -37,6 +39,7 @@ class SqliteExecutorTest extends \PHPUnit_Framework_TestCase
     /** @test */
     public function it_restores_database_from_backup()
     {
+        $this->givenMemoryIsClear();
         $this->filesystem->exists('/var/www/project/database/sqlite.db')->willReturn(true);
         $this->filesystem->read('/var/www/project/database/sqlite.db')->willReturn('contents');
 
@@ -50,18 +53,30 @@ class SqliteExecutorTest extends \PHPUnit_Framework_TestCase
     /** @test */
     public function it_confirms_that_backup_was_created()
     {
+        $this->givenMemoryIsClear();
         $this->filesystem->exists('/var/www/project/database/sqlite.db')->willReturn(true);
         $this->filesystem->read('/var/www/project/database/sqlite.db')->willReturn('contents');
 
         $this->executor->create();
 
-        $this->assertTrue($this->executor->isCreated());
+        $this->assertTrue($this->executor->isBackupCreated());
     }
 
     /** @test */
     public function it_confirms_that_backup_was_not_created()
     {
-        $this->assertFalse($this->executor->isCreated());
+        $this->givenMemoryIsClear();
+        $this->assertFalse($this->executor->isBackupCreated());
+    }
+
+    /** @test */
+    public function it_clears_memory()
+    {
+        $this->givenMemoryIsNotClear();
+
+        SqliteExecutor::clearMemory();
+
+        $this->assertFalse($this->executor->isBackupCreated());
     }
 
     /**
@@ -72,8 +87,6 @@ class SqliteExecutorTest extends \PHPUnit_Framework_TestCase
         $this->filesystem = $this->prophesize('Lucaszz\DoctrineDatabaseBackup\Backup\Filesystem');
 
         $this->executor = new SqliteExecutor('/var/www/project/database/sqlite.db', $this->filesystem->reveal());
-
-        $this->refreshSqliteExecutor();
     }
 
     /**
@@ -86,13 +99,18 @@ class SqliteExecutorTest extends \PHPUnit_Framework_TestCase
         $this->executor = null;
     }
 
-    private function refreshSqliteExecutor()
+    private function givenMemoryIsClear()
+    {
+        SqliteExecutor::clearMemory();
+    }
+
+    private function givenMemoryIsNotClear()
     {
         $reflection = new \ReflectionClass($this->executor);
         $property = $reflection->getProperty('contents');
         $property->setAccessible(true);
 
-        $property->setValue($this->executor, null);
+        $property->setValue($this->executor, 'xyz');
         $property->setAccessible(false);
     }
 }

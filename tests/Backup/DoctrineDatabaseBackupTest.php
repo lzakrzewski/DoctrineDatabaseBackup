@@ -3,8 +3,8 @@
 namespace Lucaszz\DoctrineDatabaseBackup\tests\Backup;
 
 use Doctrine\ORM\EntityManager;
-use Lucaszz\DoctrineDatabaseBackup\Backup\Backup;
 use Lucaszz\DoctrineDatabaseBackup\Backup\DoctrineDatabaseBackup;
+use Lucaszz\DoctrineDatabaseBackup\Backup\Executor\Executor;
 use Lucaszz\DoctrineDatabaseBackup\Backup\Purger;
 use Prophecy\Prophecy\ObjectProphecy;
 
@@ -12,7 +12,7 @@ class DoctrineDatabaseBackupTest extends \PHPUnit_Framework_TestCase
 {
     /** @var ObjectProphecy|EntityManager */
     private $entityManager;
-    /** @var ObjectProphecy|Backup */
+    /** @var ObjectProphecy|Executor */
     private $executor;
     /** @var ObjectProphecy|Purger */
     private $purger;
@@ -20,37 +20,25 @@ class DoctrineDatabaseBackupTest extends \PHPUnit_Framework_TestCase
     private $backup;
 
     /** @test */
-    public function it_creates_backup()
+    public function it_creates_backup_from_clear_database_and_restore_backup()
     {
+        $this->executor->isBackupCreated()->willReturn(false);
+        $this->purger->purge()->shouldBeCalled();
         $this->executor->create()->shouldBeCalled();
-
-        $this->backup->create();
-    }
-
-    /** @test */
-    public function it_restores_database_from_backup()
-    {
         $this->executor->restore()->shouldBeCalled();
 
-        $this->backup->restore();
+        $this->backup->restoreClearDatabase();
     }
 
     /** @test */
-    public function it_clears_database()
+    public function it_restores_clear_database()
     {
-        $this->purger->purge()->shouldBeCalled();
+        $this->executor->isBackupCreated()->willReturn(true);
+        $this->purger->purge()->shouldNotBeCalled();
+        $this->executor->create()->shouldNotBeCalled();
+        $this->executor->restore()->shouldBeCalled();
 
-        $this->backup->clearDatabase();
-    }
-
-    /** @test */
-    public function it_checks_if_backup_was_created()
-    {
-        $isCreated = (bool) rand(0, 1);
-
-        $this->executor->isCreated()->willReturn($isCreated);
-
-        $this->assertEquals($isCreated, $this->backup->isCreated());
+        $this->backup->restoreClearDatabase();
     }
 
     /**
@@ -66,7 +54,7 @@ class DoctrineDatabaseBackupTest extends \PHPUnit_Framework_TestCase
         $this->entityManager = $this->prophesize('\Doctrine\ORM\EntityManager');
         $this->entityManager->getConnection()->willReturn($connection->reveal());
 
-        $this->executor = $this->prophesize('Lucaszz\DoctrineDatabaseBackup\Backup\Backup');
+        $this->executor = $this->prophesize('Lucaszz\DoctrineDatabaseBackup\Backup\Executor\Executor');
         $this->purger = $this->prophesize('Lucaszz\DoctrineDatabaseBackup\Backup\Purger');
 
         $this->backup = new DoctrineDatabaseBackup($this->entityManager->reveal());
