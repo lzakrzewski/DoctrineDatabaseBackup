@@ -34,7 +34,7 @@ Installation
 Require the library with composer:
 
 ```sh
-composer require lucaszz/doctrine-database-backup "~1.0"
+composer require lucaszz/doctrine-database-backup "dev-master"
 ```
 
 Basic usage (PHPUnit example)
