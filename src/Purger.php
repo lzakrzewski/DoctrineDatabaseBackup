@@ -10,7 +10,7 @@
  * and Jonathan H. Wage <jonwage@gmail.com>, Benjamin Eberlei <kontakt@beberlei.de>
  */
 
-namespace Lucaszz\DoctrineDatabaseBackup\Backup;
+namespace Lucaszz\DoctrineDatabaseBackup;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\ORM\EntityManager;

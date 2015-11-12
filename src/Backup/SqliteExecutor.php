@@ -1,8 +1,8 @@
 <?php
 
-namespace Lucaszz\DoctrineDatabaseBackup\Backup\Executor;
+namespace Lucaszz\DoctrineDatabaseBackup\Backup;
 
-use Lucaszz\DoctrineDatabaseBackup\Backup\Filesystem;
+use Lucaszz\DoctrineDatabaseBackup\Filesystem;
 
 class SqliteExecutor implements Executor
 {

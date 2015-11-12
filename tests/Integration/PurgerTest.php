@@ -2,7 +2,7 @@
 
 namespace Lucaszz\DoctrineDatabaseBackup\tests\Backup\Executor;
 
-use Lucaszz\DoctrineDatabaseBackup\Backup\Purger;
+use Lucaszz\DoctrineDatabaseBackup\Purger;
 use Lucaszz\DoctrineDatabaseBackup\tests\Integration\Dictionary\SqliteDictionary;
 use Lucaszz\DoctrineDatabaseBackup\tests\Integration\IntegrationTestCase;
 

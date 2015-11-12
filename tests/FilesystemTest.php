@@ -1,8 +1,8 @@
 <?php
 
-namespace Lucaszz\DoctrineDatabaseBackup\tests\Backup;
+namespace Lucaszz\DoctrineDatabaseBackup\tests;
 
-use Lucaszz\DoctrineDatabaseBackup\Backup\Filesystem;
+use Lucaszz\DoctrineDatabaseBackup\Filesystem;
 use org\bovigo\vfs\vfsStream;
 
 class FilesystemTest extends \PHPUnit_Framework_TestCase

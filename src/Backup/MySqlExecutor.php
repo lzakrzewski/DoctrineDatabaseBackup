@@ -1,10 +1,10 @@
 <?php
 
-namespace Lucaszz\DoctrineDatabaseBackup\Backup\Executor;
+namespace Lucaszz\DoctrineDatabaseBackup\Backup;
 
 use Doctrine\DBAL\Connection;
-use Lucaszz\DoctrineDatabaseBackup\Backup\Command;
-use Lucaszz\DoctrineDatabaseBackup\Backup\Purger;
+use Lucaszz\DoctrineDatabaseBackup\Command;
+use Lucaszz\DoctrineDatabaseBackup\Purger;
 
 class MySqlExecutor implements Executor
 {

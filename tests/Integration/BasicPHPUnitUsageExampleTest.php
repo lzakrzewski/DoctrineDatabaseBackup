@@ -9,8 +9,8 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\ORM\Tools\Setup;
-use Lucaszz\DoctrineDatabaseBackup\Backup\DoctrineDatabaseBackup;
-use Lucaszz\DoctrineDatabaseBackup\Backup\Executor\SqliteExecutor;
+use Lucaszz\DoctrineDatabaseBackup\DoctrineDatabaseBackup;
+use Lucaszz\DoctrineDatabaseBackup\Backup\SqliteExecutor;
 use Lucaszz\DoctrineDatabaseBackup\tests\Integration\Entity\TestProduct;
 
 class BasicPHPUnitUsageExampleTest extends \PHPUnit_Framework_TestCase

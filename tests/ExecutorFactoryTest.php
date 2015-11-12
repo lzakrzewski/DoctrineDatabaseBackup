@@ -1,13 +1,13 @@
 <?php
 
-namespace Lucaszz\DoctrineDatabaseBackup\tests\Backup;
+namespace Lucaszz\DoctrineDatabaseBackup\tests;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Platforms\MySqlPlatform;
 use Doctrine\DBAL\Platforms\OraclePlatform;
 use Doctrine\DBAL\Platforms\SqlitePlatform;
-use Lucaszz\DoctrineDatabaseBackup\Backup\ExecutorFactory;
-use Lucaszz\DoctrineDatabaseBackup\Backup\Purger;
+use Lucaszz\DoctrineDatabaseBackup\ExecutorFactory;
+use Lucaszz\DoctrineDatabaseBackup\Purger;
 use Prophecy\Prophecy\ObjectProphecy;
 
 class ExecutorFactoryTest extends \PHPUnit_Framework_TestCase
@@ -33,7 +33,7 @@ class ExecutorFactoryTest extends \PHPUnit_Framework_TestCase
 
         $executor = $this->factory->create();
 
-        $this->assertInstanceOf('Lucaszz\DoctrineDatabaseBackup\Backup\Executor\SqliteExecutor', $executor);
+        $this->assertInstanceOf('Lucaszz\DoctrineDatabaseBackup\Backup\SqliteExecutor', $executor);
     }
 
     /** @test */
@@ -44,7 +44,7 @@ class ExecutorFactoryTest extends \PHPUnit_Framework_TestCase
 
         $executor = $this->factory->create();
 
-        $this->assertInstanceOf('Lucaszz\DoctrineDatabaseBackup\Backup\Executor\MySqlExecutor', $executor);
+        $this->assertInstanceOf('Lucaszz\DoctrineDatabaseBackup\Backup\MySqlExecutor', $executor);
     }
 
     /**
@@ -79,7 +79,7 @@ class ExecutorFactoryTest extends \PHPUnit_Framework_TestCase
         $this->mySqlPlatform = $this->prophesize('Doctrine\DBAL\Platforms\MySqlPlatform');
         $this->unknownPlatform = $this->prophesize('Doctrine\DBAL\Platforms\OraclePlatform');
         $this->connection = $this->prophesize('Doctrine\DBAL\Connection');
-        $this->purger = $this->prophesize('Lucaszz\DoctrineDatabaseBackup\Backup\Purger');
+        $this->purger = $this->prophesize('Lucaszz\DoctrineDatabaseBackup\Purger');
 
         $this->factory = new ExecutorFactory($this->connection->reveal(), $this->purger->reveal());
     }

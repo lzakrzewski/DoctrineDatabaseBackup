@@ -1,13 +1,13 @@
 <?php
 
-namespace Lucaszz\DoctrineDatabaseBackup\Backup;
+namespace Lucaszz\DoctrineDatabaseBackup;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Platforms\MySqlPlatform;
 use Doctrine\DBAL\Platforms\SqlitePlatform;
-use Lucaszz\DoctrineDatabaseBackup\Backup\Executor\Executor;
-use Lucaszz\DoctrineDatabaseBackup\Backup\Executor\MySqlExecutor;
-use Lucaszz\DoctrineDatabaseBackup\Backup\Executor\SqliteExecutor;
+use Lucaszz\DoctrineDatabaseBackup\Backup\Executor;
+use Lucaszz\DoctrineDatabaseBackup\Backup\MySqlExecutor;
+use Lucaszz\DoctrineDatabaseBackup\Backup\SqliteExecutor;
 
 class ExecutorFactory
 {

@@ -1,8 +1,8 @@
 <?php
 
-namespace Lucaszz\DoctrineDatabaseBackup\tests\Backup;
+namespace Lucaszz\DoctrineDatabaseBackup\tests;
 
-use Lucaszz\DoctrineDatabaseBackup\Backup\Command;
+use Lucaszz\DoctrineDatabaseBackup\Command;
 
 class CommandTest extends \PHPUnit_Framework_TestCase
 {

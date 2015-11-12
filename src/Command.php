@@ -1,6 +1,6 @@
 <?php
 
-namespace Lucaszz\DoctrineDatabaseBackup\Backup;
+namespace Lucaszz\DoctrineDatabaseBackup;
 
 use Symfony\Component\Process\Process;
 

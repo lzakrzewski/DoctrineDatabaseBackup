@@ -2,8 +2,8 @@
 
 namespace Lucaszz\DoctrineDatabaseBackup\tests\Integration;
 
-use Lucaszz\DoctrineDatabaseBackup\Backup\DoctrineDatabaseBackup;
-use Lucaszz\DoctrineDatabaseBackup\Backup\Executor\MySqlExecutor;
+use Lucaszz\DoctrineDatabaseBackup\DoctrineDatabaseBackup;
+use Lucaszz\DoctrineDatabaseBackup\Backup\MySqlExecutor;
 use Lucaszz\DoctrineDatabaseBackup\tests\Integration\Dictionary\MySqlDictionary;
 
 class MySqlBackupTest extends IntegrationTestCase

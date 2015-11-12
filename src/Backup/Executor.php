@@ -1,6 +1,6 @@
 <?php
 
-namespace Lucaszz\DoctrineDatabaseBackup\Backup\Executor;
+namespace Lucaszz\DoctrineDatabaseBackup\Backup;
 
 interface Executor
 {

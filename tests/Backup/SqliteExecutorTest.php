@@ -1,9 +1,9 @@
 <?php
 
-namespace Lucaszz\DoctrineDatabaseBackup\tests\Backup\Executor;
+namespace Lucaszz\DoctrineDatabaseBackup\tests\Backup;
 
-use Lucaszz\DoctrineDatabaseBackup\Backup\Executor\SqliteExecutor;
-use Lucaszz\DoctrineDatabaseBackup\Backup\Filesystem;
+use Lucaszz\DoctrineDatabaseBackup\Backup\SqliteExecutor;
+use Lucaszz\DoctrineDatabaseBackup\Filesystem;
 use Prophecy\Prophecy\ObjectProphecy;
 
 class SqliteExecutorTest extends \PHPUnit_Framework_TestCase
@@ -84,7 +84,7 @@ class SqliteExecutorTest extends \PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->filesystem = $this->prophesize('Lucaszz\DoctrineDatabaseBackup\Backup\Filesystem');
+        $this->filesystem = $this->prophesize('Lucaszz\DoctrineDatabaseBackup\Filesystem');
 
         $this->executor = new SqliteExecutor('/var/www/project/database/sqlite.db', $this->filesystem->reveal());
     }

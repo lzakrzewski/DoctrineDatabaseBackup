@@ -1,11 +1,11 @@
 <?php
 
-namespace Lucaszz\DoctrineDatabaseBackup\tests\Backup\Executor;
+namespace Lucaszz\DoctrineDatabaseBackup\tests\Backup;
 
 use Doctrine\DBAL\Connection;
-use Lucaszz\DoctrineDatabaseBackup\Backup\Executor\MySqlExecutor;
-use Lucaszz\DoctrineDatabaseBackup\Backup\Purger;
-use Lucaszz\DoctrineDatabaseBackup\tests\Backup\FakeCommand;
+use Lucaszz\DoctrineDatabaseBackup\Backup\MySqlExecutor;
+use Lucaszz\DoctrineDatabaseBackup\Purger;
+use Lucaszz\DoctrineDatabaseBackup\tests\FakeCommand;
 use Prophecy\Prophecy\ObjectProphecy;
 
 class MySqlExecutorTest extends \PHPUnit_Framework_TestCase
@@ -99,7 +99,7 @@ class MySqlExecutorTest extends \PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $this->connection = $this->prophesize('\Doctrine\DBAL\Connection');
-        $this->purger = $this->prophesize('\Lucaszz\DoctrineDatabaseBackup\Backup\Purger');
+        $this->purger = $this->prophesize('\Lucaszz\DoctrineDatabaseBackup\Purger');
 
         $params = array(
             'driver' => 'pdo_mysql',

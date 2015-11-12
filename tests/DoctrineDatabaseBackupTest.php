@@ -1,11 +1,11 @@
 <?php
 
-namespace Lucaszz\DoctrineDatabaseBackup\tests\Backup;
+namespace Lucaszz\DoctrineDatabaseBackup\tests;
 
 use Doctrine\ORM\EntityManager;
-use Lucaszz\DoctrineDatabaseBackup\Backup\DoctrineDatabaseBackup;
-use Lucaszz\DoctrineDatabaseBackup\Backup\Executor\Executor;
-use Lucaszz\DoctrineDatabaseBackup\Backup\Purger;
+use Lucaszz\DoctrineDatabaseBackup\DoctrineDatabaseBackup;
+use Lucaszz\DoctrineDatabaseBackup\Backup\Executor;
+use Lucaszz\DoctrineDatabaseBackup\Purger;
 use Prophecy\Prophecy\ObjectProphecy;
 
 class DoctrineDatabaseBackupTest extends \PHPUnit_Framework_TestCase
@@ -54,8 +54,8 @@ class DoctrineDatabaseBackupTest extends \PHPUnit_Framework_TestCase
         $this->entityManager = $this->prophesize('\Doctrine\ORM\EntityManager');
         $this->entityManager->getConnection()->willReturn($connection->reveal());
 
-        $this->executor = $this->prophesize('Lucaszz\DoctrineDatabaseBackup\Backup\Executor\Executor');
-        $this->purger = $this->prophesize('Lucaszz\DoctrineDatabaseBackup\Backup\Purger');
+        $this->executor = $this->prophesize('Lucaszz\DoctrineDatabaseBackup\Backup\Executor');
+        $this->purger = $this->prophesize('Lucaszz\DoctrineDatabaseBackup\Purger');
 
         $this->backup = new DoctrineDatabaseBackup($this->entityManager->reveal());
 
