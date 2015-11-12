@@ -6,11 +6,11 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Platforms\MySqlPlatform;
 use Doctrine\DBAL\Platforms\OraclePlatform;
 use Doctrine\DBAL\Platforms\SqlitePlatform;
-use Lucaszz\DoctrineDatabaseBackup\ExecutorFactory;
+use Lucaszz\DoctrineDatabaseBackup\BackupFactory;
 use Lucaszz\DoctrineDatabaseBackup\Purger;
 use Prophecy\Prophecy\ObjectProphecy;
 
-class ExecutorFactoryTest extends \PHPUnit_Framework_TestCase
+class BackupFactoryTest extends \PHPUnit_Framework_TestCase
 {
     /** @var ObjectProphecy|SqlitePlatform */
     private $sqlitePlatform;
@@ -22,29 +22,29 @@ class ExecutorFactoryTest extends \PHPUnit_Framework_TestCase
     private $connection;
     /** @var ObjectProphecy|Purger */
     private $purger;
-    /** @var ObjectProphecy|ExecutorFactory */
+    /** @var ObjectProphecy|BackupFactory */
     private $factory;
 
     /** @test */
-    public function it_can_create_sqlite_executor()
+    public function it_can_create_sqlite_backup()
     {
         $this->connection->getDatabasePlatform()->willReturn($this->sqlitePlatform->reveal());
         $this->connection->getParams()->willReturn(array('path' => '/some/dir/sqlite.db'));
 
-        $executor = $this->factory->create();
+        $backup = $this->factory->create();
 
-        $this->assertInstanceOf('Lucaszz\DoctrineDatabaseBackup\Backup\SqliteExecutor', $executor);
+        $this->assertInstanceOf('Lucaszz\DoctrineDatabaseBackup\Backup\SqliteBackup', $backup);
     }
 
     /** @test */
-    public function it_can_create_mysql_executor()
+    public function it_can_create_mysql_backup()
     {
         $this->connection->getDatabasePlatform()->willReturn($this->mySqlPlatform->reveal());
         $this->connection->getParams()->willReturn(array('dbname' => 'test-database'));
 
-        $executor = $this->factory->create();
+        $backup = $this->factory->create();
 
-        $this->assertInstanceOf('Lucaszz\DoctrineDatabaseBackup\Backup\MySqlExecutor', $executor);
+        $this->assertInstanceOf('Lucaszz\DoctrineDatabaseBackup\Backup\MySqlBackup', $backup);
     }
 
     /**
@@ -81,7 +81,7 @@ class ExecutorFactoryTest extends \PHPUnit_Framework_TestCase
         $this->connection = $this->prophesize('Doctrine\DBAL\Connection');
         $this->purger = $this->prophesize('Lucaszz\DoctrineDatabaseBackup\Purger');
 
-        $this->factory = new ExecutorFactory($this->connection->reveal(), $this->purger->reveal());
+        $this->factory = new BackupFactory($this->connection->reveal(), $this->purger->reveal());
     }
 
     /**

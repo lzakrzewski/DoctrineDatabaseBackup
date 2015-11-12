@@ -1,10 +1,9 @@
 <?php
 
-namespace Lucaszz\DoctrineDatabaseBackup\tests\Backup\Executor;
+namespace Lucaszz\DoctrineDatabaseBackup\tests\Integration;
 
 use Lucaszz\DoctrineDatabaseBackup\Purger;
 use Lucaszz\DoctrineDatabaseBackup\tests\Integration\Dictionary\SqliteDictionary;
-use Lucaszz\DoctrineDatabaseBackup\tests\Integration\IntegrationTestCase;
 
 class PurgerTest extends IntegrationTestCase
 {

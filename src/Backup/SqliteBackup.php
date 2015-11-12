@@ -4,7 +4,7 @@ namespace Lucaszz\DoctrineDatabaseBackup\Backup;
 
 use Lucaszz\DoctrineDatabaseBackup\Filesystem;
 
-class SqliteExecutor implements Executor
+class SqliteBackup implements Backup
 {
     /** @var string */
     private $sourcePath;

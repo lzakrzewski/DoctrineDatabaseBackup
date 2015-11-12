@@ -5,11 +5,11 @@ namespace Lucaszz\DoctrineDatabaseBackup;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Platforms\MySqlPlatform;
 use Doctrine\DBAL\Platforms\SqlitePlatform;
-use Lucaszz\DoctrineDatabaseBackup\Backup\Executor;
-use Lucaszz\DoctrineDatabaseBackup\Backup\MySqlExecutor;
-use Lucaszz\DoctrineDatabaseBackup\Backup\SqliteExecutor;
+use Lucaszz\DoctrineDatabaseBackup\Backup\Backup;
+use Lucaszz\DoctrineDatabaseBackup\Backup\MySqlBackup;
+use Lucaszz\DoctrineDatabaseBackup\Backup\SqliteBackup;
 
-class ExecutorFactory
+class BackupFactory
 {
     /** @var Connection */
     private $connection;
@@ -27,22 +27,22 @@ class ExecutorFactory
     }
 
     /**
-     * @return Executor
+     * @return Backup
      */
     public function create()
     {
         if ($this->connection->getDatabasePlatform() instanceof SqlitePlatform) {
-            return $this->sqliteExecutor();
+            return $this->sqliteBackup();
         }
 
         if ($this->connection->getDatabasePlatform() instanceof MySqlPlatform) {
-            return $this->mySqlExecutor();
+            return $this->mySqlBackup();
         }
 
         throw new \RuntimeException('Unsupported database platform. Currently "SqlitePlatform" is supported.');
     }
 
-    private function sqliteExecutor()
+    private function sqliteBackup()
     {
         $params = $this->connection->getParams();
 
@@ -50,11 +50,11 @@ class ExecutorFactory
             throw new \RuntimeException('Backup for Sqlite "in_memory" is not supported.');
         }
 
-        return new SqliteExecutor($params['path'], new Filesystem());
+        return new SqliteBackup($params['path'], new Filesystem());
     }
 
-    private function mySqlExecutor()
+    private function mySqlBackup()
     {
-        return new MySqlExecutor($this->connection, $this->purger, new Command());
+        return new MySqlBackup($this->connection, $this->purger, new Command());
     }
 }

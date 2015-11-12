@@ -2,14 +2,14 @@
 
 namespace Lucaszz\DoctrineDatabaseBackup\tests\Backup;
 
-use Lucaszz\DoctrineDatabaseBackup\Backup\SqliteExecutor;
+use Lucaszz\DoctrineDatabaseBackup\Backup\SqliteBackup;
 use Lucaszz\DoctrineDatabaseBackup\Filesystem;
 use Prophecy\Prophecy\ObjectProphecy;
 
-class SqliteExecutorTest extends \PHPUnit_Framework_TestCase
+class SqliteBackupTest extends \PHPUnit_Framework_TestCase
 {
-    /** @var SqliteExecutor */
-    private $executor;
+    /** @var SqliteBackup */
+    private $backup;
     /** @var ObjectProphecy|Filesystem */
     private $filesystem;
 
@@ -23,7 +23,7 @@ class SqliteExecutorTest extends \PHPUnit_Framework_TestCase
         $this->givenMemoryIsClear();
         $this->filesystem->exists('/var/www/project/database/sqlite.db')->willReturn(false);
 
-        $this->executor->create();
+        $this->backup->create();
     }
 
     /** @test */
@@ -33,7 +33,7 @@ class SqliteExecutorTest extends \PHPUnit_Framework_TestCase
         $this->filesystem->exists('/var/www/project/database/sqlite.db')->willReturn(true);
         $this->filesystem->read('/var/www/project/database/sqlite.db')->willReturn('contents');
 
-        $this->executor->create();
+        $this->backup->create();
     }
 
     /** @test */
@@ -43,11 +43,11 @@ class SqliteExecutorTest extends \PHPUnit_Framework_TestCase
         $this->filesystem->exists('/var/www/project/database/sqlite.db')->willReturn(true);
         $this->filesystem->read('/var/www/project/database/sqlite.db')->willReturn('contents');
 
-        $this->executor->create();
+        $this->backup->create();
 
         $this->filesystem->write('/var/www/project/database/sqlite.db', 'contents')->shouldBeCalled();
 
-        $this->executor->restore();
+        $this->backup->restore();
     }
 
     /** @test */
@@ -57,16 +57,16 @@ class SqliteExecutorTest extends \PHPUnit_Framework_TestCase
         $this->filesystem->exists('/var/www/project/database/sqlite.db')->willReturn(true);
         $this->filesystem->read('/var/www/project/database/sqlite.db')->willReturn('contents');
 
-        $this->executor->create();
+        $this->backup->create();
 
-        $this->assertTrue($this->executor->isBackupCreated());
+        $this->assertTrue($this->backup->isBackupCreated());
     }
 
     /** @test */
     public function it_confirms_that_backup_was_not_created()
     {
         $this->givenMemoryIsClear();
-        $this->assertFalse($this->executor->isBackupCreated());
+        $this->assertFalse($this->backup->isBackupCreated());
     }
 
     /** @test */
@@ -74,9 +74,9 @@ class SqliteExecutorTest extends \PHPUnit_Framework_TestCase
     {
         $this->givenMemoryIsNotClear();
 
-        SqliteExecutor::clearMemory();
+        SqliteBackup::clearMemory();
 
-        $this->assertFalse($this->executor->isBackupCreated());
+        $this->assertFalse($this->backup->isBackupCreated());
     }
 
     /**
@@ -86,7 +86,7 @@ class SqliteExecutorTest extends \PHPUnit_Framework_TestCase
     {
         $this->filesystem = $this->prophesize('Lucaszz\DoctrineDatabaseBackup\Filesystem');
 
-        $this->executor = new SqliteExecutor('/var/www/project/database/sqlite.db', $this->filesystem->reveal());
+        $this->backup = new SqliteBackup('/var/www/project/database/sqlite.db', $this->filesystem->reveal());
     }
 
     /**
@@ -96,21 +96,21 @@ class SqliteExecutorTest extends \PHPUnit_Framework_TestCase
     {
         $this->filesystem = null;
 
-        $this->executor = null;
+        $this->backup = null;
     }
 
     private function givenMemoryIsClear()
     {
-        SqliteExecutor::clearMemory();
+        SqliteBackup::clearMemory();
     }
 
     private function givenMemoryIsNotClear()
     {
-        $reflection = new \ReflectionClass($this->executor);
+        $reflection = new \ReflectionClass($this->backup);
         $property = $reflection->getProperty('contents');
         $property->setAccessible(true);
 
-        $property->setValue($this->executor, 'xyz');
+        $property->setValue($this->backup, 'xyz');
         $property->setAccessible(false);
     }
 }

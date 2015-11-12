@@ -2,7 +2,7 @@
 
 namespace Lucaszz\DoctrineDatabaseBackup\Backup;
 
-interface Executor
+interface Backup
 {
     /**
      * This method checks if backup was created during current PHP process.

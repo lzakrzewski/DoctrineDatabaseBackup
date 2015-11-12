@@ -3,12 +3,12 @@
 namespace Lucaszz\DoctrineDatabaseBackup\tests\Backup;
 
 use Doctrine\DBAL\Connection;
-use Lucaszz\DoctrineDatabaseBackup\Backup\MySqlExecutor;
+use Lucaszz\DoctrineDatabaseBackup\Backup\MySqlBackup;
 use Lucaszz\DoctrineDatabaseBackup\Purger;
 use Lucaszz\DoctrineDatabaseBackup\tests\FakeCommand;
 use Prophecy\Prophecy\ObjectProphecy;
 
-class MySqlExecutorTest extends \PHPUnit_Framework_TestCase
+class MySqlBackupTest extends \PHPUnit_Framework_TestCase
 {
     /** @var ObjectProphecy|Connection */
     private $connection;
@@ -16,14 +16,14 @@ class MySqlExecutorTest extends \PHPUnit_Framework_TestCase
     private $purger;
     /** @var FakeCommand */
     private $command;
-    /** @var MySqlExecutor */
-    private $executor;
+    /** @var MySqlBackup */
+    private $backup;
 
     /** @test */
     public function it_creates_backup()
     {
         $this->givenMemoryIsClear();
-        $this->executor->create();
+        $this->backup->create();
 
         $this->assertThatCommandWasCalled("mysqldump 'doctrine-database-test' --no-create-info  --user='root' --password='pass'");
     }
@@ -33,13 +33,13 @@ class MySqlExecutorTest extends \PHPUnit_Framework_TestCase
     {
         $this->givenMemoryIsClear();
         $this->command->setExpectedOutput('EXAMPLE SQL');
-        $this->executor->create();
+        $this->backup->create();
 
         $this->purger->purge()->shouldBeCalled();
 
         $this->connection->exec('EXAMPLE SQL')->shouldNotBeCalled();
 
-        $this->executor->restore();
+        $this->backup->restore();
     }
 
     /** @test */
@@ -47,7 +47,7 @@ class MySqlExecutorTest extends \PHPUnit_Framework_TestCase
     {
         $this->givenMemoryIsClear();
         $this->command->setExpectedOutput('INSERT INTO table VALUES (1, 2, 3, 4)');
-        $this->executor->create();
+        $this->backup->create();
 
         $this->purger->purge()->shouldBeCalled();
 
@@ -55,23 +55,23 @@ class MySqlExecutorTest extends \PHPUnit_Framework_TestCase
         $this->connection->exec('INSERT INTO table VALUES (1, 2, 3, 4)')->shouldBeCalled();
         $this->connection->commit()->shouldBeCalled();
 
-        $this->executor->restore();
+        $this->backup->restore();
     }
 
     /** @test */
     public function it_confirms_that_backup_was_created()
     {
         $this->givenMemoryIsClear();
-        $this->executor->create();
+        $this->backup->create();
 
-        $this->assertTrue($this->executor->isBackupCreated());
+        $this->assertTrue($this->backup->isBackupCreated());
     }
 
     /** @test */
     public function it_confirms_that_backup_was_not_created()
     {
         $this->givenMemoryIsClear();
-        $this->assertFalse($this->executor->isBackupCreated());
+        $this->assertFalse($this->backup->isBackupCreated());
     }
 
     /**
@@ -80,7 +80,7 @@ class MySqlExecutorTest extends \PHPUnit_Framework_TestCase
      */
     public function it_fails_during_restoring_database_without_backup()
     {
-        $this->executor->restore();
+        $this->backup->restore();
     }
 
     /** @test */
@@ -88,9 +88,9 @@ class MySqlExecutorTest extends \PHPUnit_Framework_TestCase
     {
         $this->givenMemoryIsNotClear();
 
-        MySqlExecutor::clearMemory();
+        MySqlBackup::clearMemory();
 
-        $this->assertFalse($this->executor->isBackupCreated());
+        $this->assertFalse($this->backup->isBackupCreated());
     }
 
     /**
@@ -111,7 +111,7 @@ class MySqlExecutorTest extends \PHPUnit_Framework_TestCase
         $this->connection->getParams()->willReturn($params);
         $this->command = new FakeCommand();
 
-        $this->executor = new MySqlExecutor($this->connection->reveal(), $this->purger->reveal(), $this->command);
+        $this->backup = new MySqlBackup($this->connection->reveal(), $this->purger->reveal(), $this->command);
     }
 
     /**
@@ -123,7 +123,7 @@ class MySqlExecutorTest extends \PHPUnit_Framework_TestCase
         $this->purger = null;
         $this->command = null;
 
-        $this->executor = null;
+        $this->backup = null;
     }
 
     private function assertThatCommandWasCalled($expectedCommand)
@@ -133,16 +133,16 @@ class MySqlExecutorTest extends \PHPUnit_Framework_TestCase
 
     private function givenMemoryIsClear()
     {
-        MySqlExecutor::clearMemory();
+        MySqlBackup::clearMemory();
     }
 
     private function givenMemoryIsNotClear()
     {
-        $reflection = new \ReflectionClass($this->executor);
+        $reflection = new \ReflectionClass($this->backup);
         $property = $reflection->getProperty('isCreated');
         $property->setAccessible(true);
 
-        $property->setValue($this->executor, true);
+        $property->setValue($this->backup, true);
         $property->setAccessible(false);
     }
 }

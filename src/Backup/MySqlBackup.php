@@ -6,7 +6,7 @@ use Doctrine\DBAL\Connection;
 use Lucaszz\DoctrineDatabaseBackup\Command;
 use Lucaszz\DoctrineDatabaseBackup\Purger;
 
-class MySqlExecutor implements Executor
+class MySqlBackup implements Backup
 {
     /** @var string */
     private static $dataSql;

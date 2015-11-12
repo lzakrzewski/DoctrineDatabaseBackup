@@ -1,6 +1,6 @@
 <?php
 
-namespace Lucaszz\DoctrineDatabaseBackup\tests\Backup\Executor;
+namespace Lucaszz\DoctrineDatabaseBackup\tests\Integration;
 
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\ORM\Tools\Setup;
 use Lucaszz\DoctrineDatabaseBackup\DoctrineDatabaseBackup;
-use Lucaszz\DoctrineDatabaseBackup\Backup\SqliteExecutor;
+use Lucaszz\DoctrineDatabaseBackup\Backup\SqliteBackup;
 use Lucaszz\DoctrineDatabaseBackup\tests\Integration\Entity\TestProduct;
 
 class BasicPHPUnitUsageExampleTest extends \PHPUnit_Framework_TestCase
@@ -40,7 +40,7 @@ class BasicPHPUnitUsageExampleTest extends \PHPUnit_Framework_TestCase
         self::setupDatabase($entityManager);
 
         //Should be called only if another test in current PHP process created backup.
-        SqliteExecutor::clearMemory();
+        SqliteBackup::clearMemory();
     }
 
     /** {@inheritdoc} */
