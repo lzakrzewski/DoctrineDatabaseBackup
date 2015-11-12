@@ -2,25 +2,25 @@
 
 namespace Lucaszz\DoctrineDatabaseBackup\Backup;
 
-use Lucaszz\DoctrineDatabaseBackup\Filesystem;
+use Lucaszz\DoctrineDatabaseBackup\Storage\LocalStorage;
 
 class SqliteBackup implements Backup
 {
     /** @var string */
     private $sourcePath;
-    /** @var Filesystem */
-    private $filesystem;
+    /** @var LocalStorage */
+    private $storage;
     /** @var string */
     private static $contents;
 
     /**
-     * @param string     $sourcePath
-     * @param Filesystem $filesystem
+     * @param string       $sourcePath
+     * @param LocalStorage $storage
      */
-    public function __construct($sourcePath, Filesystem $filesystem)
+    public function __construct($sourcePath, LocalStorage $storage)
     {
         $this->sourcePath = $sourcePath;
-        $this->filesystem = $filesystem;
+        $this->storage    = $storage;
     }
 
     /**
@@ -30,11 +30,11 @@ class SqliteBackup implements Backup
     {
         $sourcePath = $this->sourcePath;
 
-        if (!$this->filesystem->exists($sourcePath)) {
+        if (!$this->storage->has($sourcePath)) {
             throw new \RuntimeException(sprintf("Source database '%s' should exists.", $sourcePath));
         }
 
-        static::$contents = $this->filesystem->read($sourcePath);
+        static::$contents = $this->storage->read($sourcePath);
     }
 
     /**
@@ -46,7 +46,7 @@ class SqliteBackup implements Backup
             throw new \RuntimeException('Backup file should be created before restore database.');
         }
 
-        $this->filesystem->write($this->sourcePath, static::$contents);
+        $this->storage->put($this->sourcePath, static::$contents);
     }
 
     /**

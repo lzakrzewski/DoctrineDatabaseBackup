@@ -1,21 +1,21 @@
 <?php
 
-namespace Lucaszz\DoctrineDatabaseBackup\tests;
+namespace Lucaszz\DoctrineDatabaseBackup\tests\Storage;
 
-use Lucaszz\DoctrineDatabaseBackup\Filesystem;
+use Lucaszz\DoctrineDatabaseBackup\Storage\LocalStorage;
 use org\bovigo\vfs\vfsStream;
 
-class FilesystemTest extends \PHPUnit_Framework_TestCase
+class LocalStorageTest extends \PHPUnit_Framework_TestCase
 {
-    /** @var Filesystem */
-    private $filesystem;
+    /** @var LocalStorage */
+    private $storage;
 
     /** @test */
     public function it_can_read_file()
     {
         $this->givenFileExists('vfs://project/source.db', 'contents');
 
-        $this->assertEquals('contents', $this->filesystem->read('vfs://project/source.db'));
+        $this->assertEquals('contents', $this->storage->read('vfs://project/source.db'));
     }
 
     /**
@@ -25,15 +25,15 @@ class FilesystemTest extends \PHPUnit_Framework_TestCase
      */
     public function it_fails_during_reading_when_file_does_not_exists()
     {
-        $this->filesystem->read('vfs://project/source.db');
+        $this->storage->read('vfs://project/source.db');
     }
 
     /** @test */
     public function it_can_write_new_file()
     {
-        $this->filesystem->write('vfs://project/source.db', 'contents');
+        $this->storage->put('vfs://project/source.db', 'contents');
 
-        $this->assertEquals('contents', $this->filesystem->read('vfs://project/source.db'));
+        $this->assertEquals('contents', $this->storage->read('vfs://project/source.db'));
     }
 
     /** @test */
@@ -41,9 +41,9 @@ class FilesystemTest extends \PHPUnit_Framework_TestCase
     {
         $this->givenFileExists('vfs://project/source.db', 'old-contents');
 
-        $this->filesystem->write('vfs://project/source.db', 'contents');
+        $this->storage->put('vfs://project/source.db', 'contents');
 
-        $this->assertEquals('contents', $this->filesystem->read('vfs://project/source.db'));
+        $this->assertEquals('contents', $this->storage->read('vfs://project/source.db'));
     }
 
     /** @test */
@@ -51,13 +51,13 @@ class FilesystemTest extends \PHPUnit_Framework_TestCase
     {
         $this->givenFileExists('vfs://project/source.db');
 
-        $this->assertTrue($this->filesystem->exists('vfs://project/source.db'));
+        $this->assertTrue($this->storage->has('vfs://project/source.db'));
     }
 
     /** @test */
     public function it_checks_if_file_does_not_exists()
     {
-        $this->assertFalse($this->filesystem->exists('vfs://project/source.db'));
+        $this->assertFalse($this->storage->has('vfs://project/source.db'));
     }
 
     /**
@@ -67,7 +67,7 @@ class FilesystemTest extends \PHPUnit_Framework_TestCase
     {
         vfsStream::setup('project');
 
-        $this->filesystem = new Filesystem();
+        $this->storage = new LocalStorage();
     }
 
     /**
@@ -75,7 +75,7 @@ class FilesystemTest extends \PHPUnit_Framework_TestCase
      */
     protected function tearDown()
     {
-        $this->filesystem = null;
+        $this->storage = null;
     }
 
     private function givenFileExists($fileName, $contents = 'contents')

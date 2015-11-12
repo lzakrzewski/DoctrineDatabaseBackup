@@ -1,16 +1,10 @@
 <?php
 
-namespace Lucaszz\DoctrineDatabaseBackup;
+namespace Lucaszz\DoctrineDatabaseBackup\Storage;
 
-class Filesystem
+class LocalStorage implements Storage
 {
-    /**
-     * @param string $path
-     *
-     * @throws \RuntimeException
-     *
-     * @return string
-     */
+    /** {@inheritdoc} */
     public function read($path)
     {
         if (false === $path = @file_get_contents($path)) {
@@ -20,26 +14,16 @@ class Filesystem
         return $path;
     }
 
-    /**
-     * @param string $path
-     *
-     * @throws \RuntimeException
-     *
-     * @param $contents
-     */
-    public function write($path, $contents)
+    /** {@inheritdoc} */
+    public function put($path, $contents)
     {
         if (false === @file_put_contents($path, $contents)) {
             throw new \RuntimeException(sprintf('Unable to write file %s', $path));
         }
     }
 
-    /**
-     * @param $string
-     *
-     * @return bool
-     */
-    public function exists($string)
+    /** {@inheritdoc} */
+    public function has($string)
     {
         return file_exists($string);
     }
