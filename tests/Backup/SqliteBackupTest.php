@@ -107,7 +107,7 @@ class SqliteBackupTest extends \PHPUnit_Framework_TestCase
     private function givenMemoryIsNotClear()
     {
         $reflection = new \ReflectionClass($this->backup);
-        $property = $reflection->getProperty('contents');
+        $property   = $reflection->getProperty('contents');
         $property->setAccessible(true);
 
         $property->setValue($this->backup, 'xyz');

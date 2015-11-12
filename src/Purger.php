@@ -53,8 +53,8 @@ class Purger
 
     private function purgeSql()
     {
-        $sql = '';
-        $classes = array();
+        $sql       = '';
+        $classes   = [];
         $metadatas = $this->entityManager->getMetadataFactory()->getAllMetadata();
 
         foreach ($metadatas as $metadata) {
@@ -140,7 +140,7 @@ class Purger
 
     private function getAssociationTables(array $classes, AbstractPlatform $platform)
     {
-        $associationTables = array();
+        $associationTables = [];
 
         foreach ($classes as $class) {
             foreach ($class->associationMappings as $assoc) {

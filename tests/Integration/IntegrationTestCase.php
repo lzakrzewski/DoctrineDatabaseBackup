@@ -35,7 +35,7 @@ abstract class IntegrationTestCase extends \PHPUnit_Framework_TestCase
     protected function tearDown()
     {
         $this->entityManager = null;
-        $this->repository = null;
+        $this->repository    = null;
     }
 
     /**
@@ -43,7 +43,7 @@ abstract class IntegrationTestCase extends \PHPUnit_Framework_TestCase
      */
     private function createEntityManager()
     {
-        $entityPath = array(__DIR__.'/Entity');
+        $entityPath = [__DIR__.'/Entity'];
 
         $config = Setup::createAnnotationMetadataConfiguration($entityPath, false);
         $driver = new AnnotationDriver(new AnnotationReader(), $entityPath);

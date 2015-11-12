@@ -29,7 +29,7 @@ class BackupFactoryTest extends \PHPUnit_Framework_TestCase
     public function it_can_create_sqlite_backup()
     {
         $this->connection->getDatabasePlatform()->willReturn($this->sqlitePlatform->reveal());
-        $this->connection->getParams()->willReturn(array('path' => '/some/dir/sqlite.db'));
+        $this->connection->getParams()->willReturn(['path' => '/some/dir/sqlite.db']);
 
         $backup = $this->factory->create();
 
@@ -40,7 +40,7 @@ class BackupFactoryTest extends \PHPUnit_Framework_TestCase
     public function it_can_create_mysql_backup()
     {
         $this->connection->getDatabasePlatform()->willReturn($this->mySqlPlatform->reveal());
-        $this->connection->getParams()->willReturn(array('dbname' => 'test-database'));
+        $this->connection->getParams()->willReturn(['dbname' => 'test-database']);
 
         $backup = $this->factory->create();
 
@@ -54,7 +54,7 @@ class BackupFactoryTest extends \PHPUnit_Framework_TestCase
     public function it_does_not_supports_sqlite_in_memory()
     {
         $this->connection->getDatabasePlatform()->willReturn($this->sqlitePlatform->reveal());
-        $this->connection->getParams()->willReturn(array('path' => ':memory:', 'memory' => true));
+        $this->connection->getParams()->willReturn(['path' => ':memory:', 'memory' => true]);
 
         $this->factory->create();
     }
@@ -75,11 +75,11 @@ class BackupFactoryTest extends \PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->sqlitePlatform = $this->prophesize('Doctrine\DBAL\Platforms\SqlitePlatform');
-        $this->mySqlPlatform = $this->prophesize('Doctrine\DBAL\Platforms\MySqlPlatform');
+        $this->sqlitePlatform  = $this->prophesize('Doctrine\DBAL\Platforms\SqlitePlatform');
+        $this->mySqlPlatform   = $this->prophesize('Doctrine\DBAL\Platforms\MySqlPlatform');
         $this->unknownPlatform = $this->prophesize('Doctrine\DBAL\Platforms\OraclePlatform');
-        $this->connection = $this->prophesize('Doctrine\DBAL\Connection');
-        $this->purger = $this->prophesize('Lucaszz\DoctrineDatabaseBackup\Purger');
+        $this->connection      = $this->prophesize('Doctrine\DBAL\Connection');
+        $this->purger          = $this->prophesize('Lucaszz\DoctrineDatabaseBackup\Purger');
 
         $this->factory = new BackupFactory($this->connection->reveal(), $this->purger->reveal());
     }
@@ -89,11 +89,11 @@ class BackupFactoryTest extends \PHPUnit_Framework_TestCase
      */
     protected function tearDown()
     {
-        $this->sqlitePlatform = null;
-        $this->mySqlPlatform = null;
+        $this->sqlitePlatform  = null;
+        $this->mySqlPlatform   = null;
         $this->unknownPlatform = null;
-        $this->connection = null;
-        $this->purger = null;
-        $this->factory = null;
+        $this->connection      = null;
+        $this->purger          = null;
+        $this->factory         = null;
     }
 }

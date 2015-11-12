@@ -99,14 +99,14 @@ class MySqlBackupTest extends \PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $this->connection = $this->prophesize('\Doctrine\DBAL\Connection');
-        $this->purger = $this->prophesize('\Lucaszz\DoctrineDatabaseBackup\Purger');
+        $this->purger     = $this->prophesize('\Lucaszz\DoctrineDatabaseBackup\Purger');
 
-        $params = array(
-            'driver' => 'pdo_mysql',
-            'user' => 'root',
+        $params = [
+            'driver'   => 'pdo_mysql',
+            'user'     => 'root',
             'password' => 'pass',
-            'dbname' => 'doctrine-database-test',
-        );
+            'dbname'   => 'doctrine-database-test',
+        ];
 
         $this->connection->getParams()->willReturn($params);
         $this->command = new FakeCommand();
@@ -120,8 +120,8 @@ class MySqlBackupTest extends \PHPUnit_Framework_TestCase
     protected function tearDown()
     {
         $this->connection = null;
-        $this->purger = null;
-        $this->command = null;
+        $this->purger     = null;
+        $this->command    = null;
 
         $this->backup = null;
     }
@@ -139,7 +139,7 @@ class MySqlBackupTest extends \PHPUnit_Framework_TestCase
     private function givenMemoryIsNotClear()
     {
         $reflection = new \ReflectionClass($this->backup);
-        $property = $reflection->getProperty('isCreated');
+        $property   = $reflection->getProperty('isCreated');
         $property->setAccessible(true);
 
         $property->setValue($this->backup, true);

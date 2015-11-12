@@ -9,8 +9,8 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\ORM\Tools\Setup;
-use Lucaszz\DoctrineDatabaseBackup\DoctrineDatabaseBackup;
 use Lucaszz\DoctrineDatabaseBackup\Backup\SqliteBackup;
+use Lucaszz\DoctrineDatabaseBackup\DoctrineDatabaseBackup;
 use Lucaszz\DoctrineDatabaseBackup\tests\Integration\Entity\TestProduct;
 
 class AdvancedPHPUnitUsageExampleTest extends \PHPUnit_Framework_TestCase
@@ -49,7 +49,7 @@ class AdvancedPHPUnitUsageExampleTest extends \PHPUnit_Framework_TestCase
         parent::setUp();
 
         $this->entityManager = $this->createEntityManager();
-        $backup = new DoctrineDatabaseBackup($this->entityManager);
+        $backup              = new DoctrineDatabaseBackup($this->entityManager);
 
         if (!$backup->getBackup()->isBackupCreated()) {
             $backup->getPurger()->purge();
@@ -75,7 +75,7 @@ class AdvancedPHPUnitUsageExampleTest extends \PHPUnit_Framework_TestCase
      */
     private static function createEntityManager()
     {
-        $entityPath = array(__DIR__.'/Entity');
+        $entityPath = [__DIR__.'/Entity'];
 
         $config = Setup::createAnnotationMetadataConfiguration($entityPath, false);
         $driver = new AnnotationDriver(new AnnotationReader(), $entityPath);
@@ -100,7 +100,7 @@ class AdvancedPHPUnitUsageExampleTest extends \PHPUnit_Framework_TestCase
 
         $class = 'Lucaszz\DoctrineDatabaseBackup\tests\Integration\Entity\TestProduct';
 
-        $schemaTool->createSchema(array($entityManager->getClassMetadata($class)));
+        $schemaTool->createSchema([$entityManager->getClassMetadata($class)]);
     }
 
     /**
@@ -108,11 +108,11 @@ class AdvancedPHPUnitUsageExampleTest extends \PHPUnit_Framework_TestCase
      */
     private static function getParams()
     {
-        return array(
-            'driver' => 'pdo_sqlite',
-            'user' => 'root',
+        return [
+            'driver'   => 'pdo_sqlite',
+            'user'     => 'root',
             'password' => '',
-            'path' => __DIR__.'/database/sqlite.db',
-        );
+            'path'     => __DIR__.'/database/sqlite.db',
+        ];
     }
 }

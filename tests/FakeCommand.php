@@ -7,7 +7,7 @@ use Lucaszz\DoctrineDatabaseBackup\Command;
 class FakeCommand extends Command
 {
     /** @var array */
-    private $commands = array();
+    private $commands = [];
     /** @var string */
     private $expectedOutput;
 

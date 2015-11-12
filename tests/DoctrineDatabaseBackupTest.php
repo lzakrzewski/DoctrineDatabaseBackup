@@ -3,8 +3,8 @@
 namespace Lucaszz\DoctrineDatabaseBackup\tests;
 
 use Doctrine\ORM\EntityManager;
-use Lucaszz\DoctrineDatabaseBackup\DoctrineDatabaseBackup;
 use Lucaszz\DoctrineDatabaseBackup\Backup\Backup;
+use Lucaszz\DoctrineDatabaseBackup\DoctrineDatabaseBackup;
 use Lucaszz\DoctrineDatabaseBackup\Purger;
 use Prophecy\Prophecy\ObjectProphecy;
 
@@ -47,7 +47,7 @@ class DoctrineDatabaseBackupTest extends \PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $connection = $this->prophesize('\Doctrine\DBAL\Connection');
-        $platform = $this->prophesize('\Doctrine\DBAL\Platforms\MySqlPlatform');
+        $platform   = $this->prophesize('\Doctrine\DBAL\Platforms\MySqlPlatform');
 
         $connection->getDatabasePlatform()->willReturn($platform);
 
@@ -68,9 +68,9 @@ class DoctrineDatabaseBackupTest extends \PHPUnit_Framework_TestCase
      */
     protected function tearDown()
     {
-        $this->entityManager = null;
-        $this->backup = null;
-        $this->purger = null;
+        $this->entityManager          = null;
+        $this->backup                 = null;
+        $this->purger                 = null;
         $this->doctrineDatabaseBackup = null;
     }
 }

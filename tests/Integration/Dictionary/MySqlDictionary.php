@@ -12,23 +12,23 @@ trait MySqlDictionary
      */
     protected function getParams()
     {
-        return array(
-            'driver' => 'pdo_mysql',
-            'user' => 'root',
+        return [
+            'driver'   => 'pdo_mysql',
+            'user'     => 'root',
             'password' => '',
-            'dbname' => 'doctrine-database-test',
-        );
+            'dbname'   => 'doctrine-database-test',
+        ];
     }
 
     protected function setupDatabase()
     {
         $params = $this->getParams();
-        $name = $params['dbname'];
+        $name   = $params['dbname'];
 
         unset($params['dbname']);
 
         $tmpConnection = DriverManager::getConnection($params);
-        $nameEscaped = $tmpConnection->getDatabasePlatform()->quoteSingleIdentifier($name);
+        $nameEscaped   = $tmpConnection->getDatabasePlatform()->quoteSingleIdentifier($name);
 
         if (in_array($name, $tmpConnection->getSchemaManager()->listDatabases())) {
             $tmpConnection->getSchemaManager()->dropDatabase($nameEscaped);
@@ -36,8 +36,8 @@ trait MySqlDictionary
 
         $tmpConnection->getSchemaManager()->createDatabase($nameEscaped);
 
-        $class = $this->productClass();
+        $class      = $this->productClass();
         $schemaTool = new SchemaTool($this->entityManager);
-        $schemaTool->createSchema(array($this->entityManager->getClassMetadata($class)));
+        $schemaTool->createSchema([$this->entityManager->getClassMetadata($class)]);
     }
 }

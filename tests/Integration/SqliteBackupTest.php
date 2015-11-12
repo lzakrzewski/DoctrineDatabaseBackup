@@ -2,8 +2,8 @@
 
 namespace Lucaszz\DoctrineDatabaseBackup\tests\Integration;
 
-use Lucaszz\DoctrineDatabaseBackup\DoctrineDatabaseBackup;
 use Lucaszz\DoctrineDatabaseBackup\Backup\SqliteBackup;
+use Lucaszz\DoctrineDatabaseBackup\DoctrineDatabaseBackup;
 use Lucaszz\DoctrineDatabaseBackup\tests\Integration\Dictionary\SqliteDictionary;
 
 class SqliteBackupTest extends IntegrationTestCase

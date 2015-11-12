@@ -23,7 +23,7 @@ class BackupFactory
     public function __construct(Connection $connection, Purger $purger)
     {
         $this->connection = $connection;
-        $this->purger = $purger;
+        $this->purger     = $purger;
     }
 
     /**

@@ -27,14 +27,14 @@ class MySqlBackup implements Backup
     public function __construct(Connection $connection, Purger $purger, Command $command)
     {
         $this->connection = $connection;
-        $this->purger = $purger;
-        $this->command = $command;
+        $this->purger     = $purger;
+        $this->command    = $command;
     }
 
     /** {@inheritdoc} */
     public function create()
     {
-        static::$dataSql = $this->dataSql();
+        static::$dataSql   = $this->dataSql();
         static::$isCreated = true;
     }
 
@@ -76,7 +76,7 @@ class MySqlBackup implements Backup
 
     private function dataSql()
     {
-        $params = $this->connection->getParams();
+        $params  = $this->connection->getParams();
         $command = sprintf('mysqldump %s --no-create-info ', escapeshellarg($params['dbname']));
 
         if (isset($params['host']) && strlen($params['host'])) {
