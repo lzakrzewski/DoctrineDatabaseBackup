@@ -2,31 +2,49 @@
 
 namespace Lucaszz\DoctrineDatabaseBackup\tests\Command;
 
-use Lucaszz\DoctrineDatabaseBackup\Command\MysqldumpCommand;
-
 class MysqldumpCommandTest extends \PHPUnit_Framework_TestCase
 {
-    /** @var MysqldumpCommand  */
-    private $command;
-
     /** @test */
     public function it_can_call_full_command_to_dump_database()
     {
+        $command = new MysqldumpDummyCommand('dbname', 'host', 'user', 'password');
+
         $this->assertEquals(
             "mysqldump 'dbname' --no-create-info  --host='host' --user='user' --password='password'",
-            $this->command->run()
+            $command->run()
         );
     }
 
-    /** {@inheritdoc} */
-    protected function setUp()
+    /** @test */
+    public function it_can_call_command_to_dump_database_without_password()
     {
-        $this->command = new MysqldumpDummyCommand('dbname', 'host', 'user', 'password');
+        $command = new MysqldumpDummyCommand('dbname', 'host', 'user');
+
+        $this->assertEquals(
+            "mysqldump 'dbname' --no-create-info  --host='host' --user='user'",
+            $command->run()
+        );
     }
 
-    /** {@inheritdoc} */
-    protected function tearDown()
+    /** @test */
+    public function it_can_call_command_to_dump_database_without_password_and_user()
     {
-        $this->command = null;
+        $command = new MysqldumpDummyCommand('dbname', 'host');
+
+        $this->assertEquals(
+            "mysqldump 'dbname' --no-create-info  --host='host'",
+            $command->run()
+        );
+    }
+
+    /** @test */
+    public function it_can_call_command_to_dump_database_without_password_user_and_host()
+    {
+        $command = new MysqldumpDummyCommand('dbname');
+
+        $this->assertEquals(
+            "mysqldump 'dbname' --no-create-info ",
+            $command->run()
+        );
     }
 }

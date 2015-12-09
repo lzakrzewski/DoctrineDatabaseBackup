@@ -17,11 +17,11 @@ class MysqldumpCommand implements Command
 
     /**
      * @param $dbname
-     * @param $host
-     * @param $user
-     * @param $password
+     * @param string|null $host
+     * @param string|null $user
+     * @param string|null $password
      */
-    public function __construct($dbname, $host, $user, $password)
+    public function __construct($dbname, $host = null, $user = null, $password = null)
     {
         $this->dbname   = $dbname;
         $this->host     = $host;
