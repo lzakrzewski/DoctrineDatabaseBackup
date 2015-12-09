@@ -3,7 +3,7 @@
 namespace Lucaszz\DoctrineDatabaseBackup\Backup;
 
 use Doctrine\DBAL\Connection;
-use Lucaszz\DoctrineDatabaseBackup\Command;
+use Lucaszz\DoctrineDatabaseBackup\LegacyCommand;
 use Lucaszz\DoctrineDatabaseBackup\Purger;
 
 class MySqlBackup implements Backup
@@ -16,15 +16,15 @@ class MySqlBackup implements Backup
     private $connection;
     /** @var Purger */
     private $purger;
-    /** @var Command */
+    /** @var LegacyCommand */
     private $command;
 
     /**
-     * @param Connection $connection
-     * @param Purger     $purger
-     * @param Command    $command
+     * @param Connection    $connection
+     * @param Purger        $purger
+     * @param LegacyCommand $command
      */
-    public function __construct(Connection $connection, Purger $purger, Command $command)
+    public function __construct(Connection $connection, Purger $purger, LegacyCommand $command)
     {
         $this->connection = $connection;
         $this->purger     = $purger;

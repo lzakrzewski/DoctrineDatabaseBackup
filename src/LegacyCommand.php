@@ -4,7 +4,7 @@ namespace Lucaszz\DoctrineDatabaseBackup;
 
 use Symfony\Component\Process\Process;
 
-class Command
+class LegacyCommand
 {
     /**
      * @param $command

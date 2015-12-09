@@ -2,9 +2,9 @@
 
 namespace Lucaszz\DoctrineDatabaseBackup\tests;
 
-use Lucaszz\DoctrineDatabaseBackup\Command;
+use Lucaszz\DoctrineDatabaseBackup\LegacyCommand;
 
-class FakeCommand extends Command
+class FakeLegacyCommand extends LegacyCommand
 {
     /** @var array */
     private $commands = [];

@@ -5,7 +5,7 @@ namespace Lucaszz\DoctrineDatabaseBackup\tests\Backup;
 use Doctrine\DBAL\Connection;
 use Lucaszz\DoctrineDatabaseBackup\Backup\MySqlBackup;
 use Lucaszz\DoctrineDatabaseBackup\Purger;
-use Lucaszz\DoctrineDatabaseBackup\tests\FakeCommand;
+use Lucaszz\DoctrineDatabaseBackup\tests\FakeLegacyCommand;
 use Prophecy\Prophecy\ObjectProphecy;
 
 class MySqlBackupTest extends \PHPUnit_Framework_TestCase
@@ -14,7 +14,7 @@ class MySqlBackupTest extends \PHPUnit_Framework_TestCase
     private $connection;
     /** @var ObjectProphecy|Purger */
     private $purger;
-    /** @var FakeCommand */
+    /** @var FakeLegacyCommand */
     private $command;
     /** @var MySqlBackup */
     private $backup;
@@ -109,7 +109,7 @@ class MySqlBackupTest extends \PHPUnit_Framework_TestCase
         ];
 
         $this->connection->getParams()->willReturn($params);
-        $this->command = new FakeCommand();
+        $this->command = new FakeLegacyCommand();
 
         $this->backup = new MySqlBackup($this->connection->reveal(), $this->purger->reveal(), $this->command);
     }

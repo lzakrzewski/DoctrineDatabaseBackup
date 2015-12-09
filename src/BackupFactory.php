@@ -56,6 +56,6 @@ class BackupFactory
 
     private function mySqlBackup()
     {
-        return new MySqlBackup($this->connection, $this->purger, new Command());
+        return new MySqlBackup($this->connection, $this->purger, new LegacyCommand());
     }
 }

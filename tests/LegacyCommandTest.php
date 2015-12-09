@@ -2,11 +2,11 @@
 
 namespace Lucaszz\DoctrineDatabaseBackup\tests;
 
-use Lucaszz\DoctrineDatabaseBackup\Command;
+use Lucaszz\DoctrineDatabaseBackup\LegacyCommand;
 
-class CommandTest extends \PHPUnit_Framework_TestCase
+class LegacyCommandTest extends \PHPUnit_Framework_TestCase
 {
-    /** @var Command */
+    /** @var LegacyCommand */
     private $command;
 
     /** @test */
@@ -29,7 +29,7 @@ class CommandTest extends \PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->command = new Command();
+        $this->command = new LegacyCommand();
     }
 
     /**
