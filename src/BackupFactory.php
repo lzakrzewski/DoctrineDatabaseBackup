@@ -8,6 +8,7 @@ use Doctrine\DBAL\Platforms\SqlitePlatform;
 use Lucaszz\DoctrineDatabaseBackup\Backup\Backup;
 use Lucaszz\DoctrineDatabaseBackup\Backup\MySqlBackup;
 use Lucaszz\DoctrineDatabaseBackup\Backup\SqliteBackup;
+use Lucaszz\DoctrineDatabaseBackup\Command\MysqldumpCommand;
 use Lucaszz\DoctrineDatabaseBackup\Storage\InMemoryStorage;
 use Lucaszz\DoctrineDatabaseBackup\Storage\LocalStorage;
 
@@ -60,6 +61,18 @@ class BackupFactory
 
     private function mySqlBackup()
     {
-        return new MySqlBackup($this->connection, $this->purger, new LegacyCommand());
+        $params = $this->connection->getParams();
+
+        if (false === isset($params['dbname'])) {
+            throw new \RuntimeException('Database name should be provided');
+        }
+
+        $host     = (isset($params['host'])) ? $params['host'] : null;
+        $user     = (isset($params['user'])) ? $params['user'] : null;
+        $password = (isset($params['password'])) ? $params['password'] : null;
+
+        $command = new MysqldumpCommand($params['dbname'], $host, $user, $password);
+
+        return new MySqlBackup($this->connection, InMemoryStorage::instance(), $this->purger, $command);
     }
 }

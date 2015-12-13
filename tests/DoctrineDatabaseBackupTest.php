@@ -50,6 +50,7 @@ class DoctrineDatabaseBackupTest extends \PHPUnit_Framework_TestCase
         $platform   = $this->prophesize('\Doctrine\DBAL\Platforms\MySqlPlatform');
 
         $connection->getDatabasePlatform()->willReturn($platform);
+        $connection->getParams()->willReturn(['dbname' => 'test']);
 
         $this->entityManager = $this->prophesize('\Doctrine\ORM\EntityManager');
         $this->entityManager->getConnection()->willReturn($connection->reveal());

@@ -41,7 +41,7 @@ class InMemoryStorage implements Storage
     /** {@inheritdoc} */
     public function has($key)
     {
-        return isset($this->registry[$key]);
+        return array_key_exists($key, $this->registry);
     }
 
     public function clear()

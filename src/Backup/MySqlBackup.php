@@ -3,39 +3,41 @@
 namespace Lucaszz\DoctrineDatabaseBackup\Backup;
 
 use Doctrine\DBAL\Connection;
-use Lucaszz\DoctrineDatabaseBackup\LegacyCommand;
+use Lucaszz\DoctrineDatabaseBackup\Command\Command;
 use Lucaszz\DoctrineDatabaseBackup\Purger;
+use Lucaszz\DoctrineDatabaseBackup\Storage\InMemoryStorage;
 
 class MySqlBackup implements Backup
 {
-    /** @var string */
-    private static $dataSql;
-    /** @var bool */
-    private static $isCreated = false;
+    const BACKUP_KEY = 'mysql';
+
     /** @var Connection */
     private $connection;
+    /** @var InMemoryStorage */
+    private $memoryStorage;
     /** @var Purger */
     private $purger;
-    /** @var LegacyCommand */
+    /** @var Command */
     private $command;
 
     /**
-     * @param Connection    $connection
-     * @param Purger        $purger
-     * @param LegacyCommand $command
+     * @param Connection      $connection
+     * @param InMemoryStorage $memoryStorage
+     * @param Purger          $purger
+     * @param Command         $command
      */
-    public function __construct(Connection $connection, Purger $purger, LegacyCommand $command)
+    public function __construct(Connection $connection, InMemoryStorage $memoryStorage, Purger $purger, Command $command)
     {
-        $this->connection = $connection;
-        $this->purger     = $purger;
-        $this->command    = $command;
+        $this->connection    = $connection;
+        $this->memoryStorage = $memoryStorage;
+        $this->purger        = $purger;
+        $this->command       = $command;
     }
 
     /** {@inheritdoc} */
     public function create()
     {
-        static::$dataSql   = $this->dataSql();
-        static::$isCreated = true;
+        $this->memoryStorage->put(self::BACKUP_KEY, $this->dataSql());
     }
 
     /** {@inheritdoc} */
@@ -47,23 +49,21 @@ class MySqlBackup implements Backup
 
         $this->purger->purge();
 
-        if (null !== static::$dataSql) {
-            $this->execute(static::$dataSql);
+        if (null !== $dataSql = $this->memoryStorage->read(self::BACKUP_KEY)) {
+            $this->execute($dataSql);
         }
     }
 
     /** {@inheritdoc} */
     public function isBackupCreated()
     {
-        return static::$isCreated;
+        return $this->memoryStorage->has(self::BACKUP_KEY);
     }
 
     /** {@inheritdoc} */
     public static function clearMemory()
     {
-        static::$dataSql = null;
-        /** @var bool */
-        static::$isCreated = false;
+        InMemoryStorage::instance()->clear();
     }
 
     private function execute($sql)
@@ -76,20 +76,7 @@ class MySqlBackup implements Backup
 
     private function dataSql()
     {
-        $params  = $this->connection->getParams();
-        $command = sprintf('mysqldump %s --no-create-info ', escapeshellarg($params['dbname']));
-
-        if (isset($params['host']) && strlen($params['host'])) {
-            $command .= sprintf(' --host=%s', escapeshellarg($params['host']));
-        }
-        if (isset($params['user']) && strlen($params['user'])) {
-            $command .= sprintf(' --user=%s', escapeshellarg($params['user']));
-        }
-        if (isset($params['password']) && strlen($params['password'])) {
-            $command .= sprintf(' --password=%s', escapeshellarg($params['password']));
-        }
-
-        $output = $this->command->run($command);
+        $output = $this->command->run();
 
         if (false === stripos($output, 'INSERT')) {
             return;

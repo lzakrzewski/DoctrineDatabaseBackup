@@ -29,17 +29,31 @@ class InMemoryStorageTest extends \PHPUnit_Framework_TestCase
      * @test
      * @expectedException \RuntimeException
      */
-    public function it_fails_when_it_has_not_object()
+    public function it_fails_when_try_to_read_not_existing_value()
     {
         $this->storage->read('test');
     }
 
     /** @test */
-    public function it_has_object()
+    public function it_has_value()
     {
         $value = new \stdClass();
 
         $this->storage->put('test', $value);
+
+        $this->assertTrue($this->storage->has('test'));
+    }
+
+    /** @test */
+    public function it_has_not_value()
+    {
+        $this->assertFalse($this->storage->has('test'));
+    }
+
+    /** @test */
+    public function it_has_null()
+    {
+        $this->storage->put('test', null);
 
         $this->assertTrue($this->storage->has('test'));
     }
@@ -57,6 +71,7 @@ class InMemoryStorageTest extends \PHPUnit_Framework_TestCase
     public function it_can_be_cleared()
     {
         $value = new \stdClass();
+
         $this->storage->put('test', $value);
         $this->storage->clear();
 

@@ -5,6 +5,7 @@ namespace Lucaszz\DoctrineDatabaseBackup\tests\Backup;
 use Doctrine\DBAL\Connection;
 use Lucaszz\DoctrineDatabaseBackup\Backup\MySqlBackup;
 use Lucaszz\DoctrineDatabaseBackup\Purger;
+use Lucaszz\DoctrineDatabaseBackup\Storage\InMemoryStorage;
 use Lucaszz\DoctrineDatabaseBackup\tests\FakeLegacyCommand;
 use Prophecy\Prophecy\ObjectProphecy;
 
@@ -12,6 +13,8 @@ class MySqlBackupTest extends \PHPUnit_Framework_TestCase
 {
     /** @var ObjectProphecy|Connection */
     private $connection;
+    /** @var ObjectProphecy|InMemoryStorage */
+    private $memoryStorage;
     /** @var ObjectProphecy|Purger */
     private $purger;
     /** @var FakeLegacyCommand */
@@ -22,47 +25,51 @@ class MySqlBackupTest extends \PHPUnit_Framework_TestCase
     /** @test */
     public function it_creates_backup()
     {
-        $this->givenMemoryIsClear();
+        $this->command->run()->willReturn(null);
+
         $this->backup->create();
 
-        $this->assertThatCommandWasCalled("mysqldump 'doctrine-database-test' --no-create-info  --user='root' --password='pass'");
+        $this->memoryStorage->put(MySqlBackup::BACKUP_KEY, null)->shouldBeCalled();
+    }
+
+    /** @test */
+    public function it_creates_backup_with_data()
+    {
+        $this->command->run()->willReturn('INSERT INTO table VALUES (1, 2, 3, 4)');
+
+        $this->backup->create();
+
+        $this->memoryStorage->put(MySqlBackup::BACKUP_KEY, 'INSERT INTO table VALUES (1, 2, 3, 4)')->shouldBeCalled();
     }
 
     /** @test */
     public function it_restores_database()
     {
-        $this->givenMemoryIsClear();
-        $this->command->setExpectedOutput('EXAMPLE SQL');
-        $this->backup->create();
-
-        $this->purger->purge()->shouldBeCalled();
-
-        $this->connection->exec('EXAMPLE SQL')->shouldNotBeCalled();
+        $this->givenMemoryBackupExists();
 
         $this->backup->restore();
+
+        $this->purger->purge()->shouldBeCalled();
+        $this->memoryStorage->read(MySqlBackup::BACKUP_KEY)->shouldBeCalled();
     }
 
     /** @test */
     public function it_restores_database_with_data()
     {
-        $this->givenMemoryIsClear();
-        $this->command->setExpectedOutput('INSERT INTO table VALUES (1, 2, 3, 4)');
-        $this->backup->create();
+        $this->givenMemoryBackupWithDataExists();
+
+        $this->backup->restore();
 
         $this->purger->purge()->shouldBeCalled();
-
         $this->connection->beginTransaction()->shouldBeCalled();
         $this->connection->exec('INSERT INTO table VALUES (1, 2, 3, 4)')->shouldBeCalled();
         $this->connection->commit()->shouldBeCalled();
-
-        $this->backup->restore();
     }
 
     /** @test */
     public function it_confirms_that_backup_was_created()
     {
-        $this->givenMemoryIsClear();
-        $this->backup->create();
+        $this->givenMemoryBackupExists();
 
         $this->assertTrue($this->backup->isBackupCreated());
     }
@@ -70,7 +77,8 @@ class MySqlBackupTest extends \PHPUnit_Framework_TestCase
     /** @test */
     public function it_confirms_that_backup_was_not_created()
     {
-        $this->givenMemoryIsClear();
+        $this->givenMemoryBackupDoesNotExists();
+
         $this->assertFalse($this->backup->isBackupCreated());
     }
 
@@ -83,66 +91,42 @@ class MySqlBackupTest extends \PHPUnit_Framework_TestCase
         $this->backup->restore();
     }
 
-    /** @test */
-    public function it_clears_memory()
-    {
-        $this->givenMemoryIsNotClear();
-
-        MySqlBackup::clearMemory();
-
-        $this->assertFalse($this->backup->isBackupCreated());
-    }
-
-    /**
-     * {@inheritdoc}
-     */
+    /** {@inheritdoc} */
     protected function setUp()
     {
-        $this->connection = $this->prophesize('\Doctrine\DBAL\Connection');
-        $this->purger     = $this->prophesize('\Lucaszz\DoctrineDatabaseBackup\Purger');
+        $this->connection    = $this->prophesize('\Doctrine\DBAL\Connection');
+        $this->memoryStorage = $this->prophesize('\Lucaszz\DoctrineDatabaseBackup\Storage\InMemoryStorage');
+        $this->purger        = $this->prophesize('\Lucaszz\DoctrineDatabaseBackup\Purger');
+        $this->command       = $this->prophesize('\Lucaszz\DoctrineDatabaseBackup\Command\Command');
 
-        $params = [
-            'driver'   => 'pdo_mysql',
-            'user'     => 'root',
-            'password' => 'pass',
-            'dbname'   => 'doctrine-database-test',
-        ];
-
-        $this->connection->getParams()->willReturn($params);
-        $this->command = new FakeLegacyCommand();
-
-        $this->backup = new MySqlBackup($this->connection->reveal(), $this->purger->reveal(), $this->command);
+        $this->backup = new MySqlBackup($this->connection->reveal(), $this->memoryStorage->reveal(), $this->purger->reveal(), $this->command->reveal());
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    /** {@inheritdoc} */
     protected function tearDown()
     {
-        $this->connection = null;
-        $this->purger     = null;
-        $this->command    = null;
+        $this->connection    = null;
+        $this->memoryStorage = null;
+        $this->purger        = null;
+        $this->command       = null;
 
         $this->backup = null;
     }
 
-    private function assertThatCommandWasCalled($expectedCommand)
+    private function givenMemoryBackupExists()
     {
-        $this->assertContains($expectedCommand, $this->command->getCommands());
+        $this->memoryStorage->has(MySqlBackup::BACKUP_KEY)->willReturn(true);
+        $this->memoryStorage->read(MySqlBackup::BACKUP_KEY)->willReturn('contents');
     }
 
-    private function givenMemoryIsClear()
+    private function givenMemoryBackupDoesNotExists()
     {
-        MySqlBackup::clearMemory();
+        $this->memoryStorage->has(MySqlBackup::BACKUP_KEY)->willReturn(false);
     }
 
-    private function givenMemoryIsNotClear()
+    private function givenMemoryBackupWithDataExists()
     {
-        $reflection = new \ReflectionClass($this->backup);
-        $property   = $reflection->getProperty('isCreated');
-        $property->setAccessible(true);
-
-        $property->setValue($this->backup, true);
-        $property->setAccessible(false);
+        $this->memoryStorage->has(MySqlBackup::BACKUP_KEY)->willReturn(true);
+        $this->memoryStorage->read(MySqlBackup::BACKUP_KEY)->willReturn('INSERT INTO table VALUES (1, 2, 3, 4)');
     }
 }
