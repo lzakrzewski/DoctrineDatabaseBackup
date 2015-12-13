@@ -3,6 +3,7 @@
 namespace Lucaszz\DoctrineDatabaseBackup\tests\Integration;
 
 use Lucaszz\DoctrineDatabaseBackup\Purger;
+use Lucaszz\DoctrineDatabaseBackup\Storage\InMemoryStorage;
 use Lucaszz\DoctrineDatabaseBackup\tests\Integration\Dictionary\SqliteDictionary;
 
 class PurgerTest extends IntegrationTestCase
@@ -43,7 +44,9 @@ class PurgerTest extends IntegrationTestCase
     {
         parent::setUp();
 
-        $this->purger = new Purger($this->entityManager);
+        InMemoryStorage::instance()->clear();
+
+        $this->purger = new Purger($this->entityManager, InMemoryStorage::instance());
     }
 
     /**

@@ -16,29 +16,34 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Internal\CommitOrderCalculator;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Lucaszz\DoctrineDatabaseBackup\Storage\InMemoryStorage;
 
 class Purger
 {
-    /** @var string */
-    private static $purgeSql;
+    const PURGER_KEY = 'purger';
+
     /** @var EntityManager */
     private $entityManager;
+    /** @var InMemoryStorage */
+    private $memoryStorage;
 
     /**
-     * @param EntityManager $entityManager
+     * @param EntityManager   $entityManager
+     * @param InMemoryStorage $memoryStorage
      */
-    public function __construct(EntityManager $entityManager)
+    public function __construct(EntityManager $entityManager, InMemoryStorage $memoryStorage)
     {
         $this->entityManager = $entityManager;
+        $this->memoryStorage = $memoryStorage;
     }
 
     public function purge()
     {
-        if (null === static::$purgeSql) {
-            static::$purgeSql = $this->purgeSql();
+        if (false === $this->memoryStorage->has(self::PURGER_KEY)) {
+            $this->memoryStorage->put(self::PURGER_KEY, $this->purgeSql());
         }
 
-        $this->execute(static::$purgeSql);
+        $this->execute($this->memoryStorage->read(self::PURGER_KEY));
     }
 
     private function execute($sql)

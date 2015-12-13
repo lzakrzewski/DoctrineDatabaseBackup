@@ -4,6 +4,7 @@ namespace Lucaszz\DoctrineDatabaseBackup;
 
 use Doctrine\ORM\EntityManager;
 use Lucaszz\DoctrineDatabaseBackup\Backup\Backup;
+use Lucaszz\DoctrineDatabaseBackup\Storage\InMemoryStorage;
 
 class DoctrineDatabaseBackup
 {
@@ -17,7 +18,7 @@ class DoctrineDatabaseBackup
      */
     public function __construct(EntityManager $entityManager)
     {
-        $this->purger = new Purger($entityManager);
+        $this->purger = new Purger($entityManager, InMemoryStorage::instance());
         $this->backup = (new BackupFactory($entityManager->getConnection(), $this->purger))->create();
     }
 
