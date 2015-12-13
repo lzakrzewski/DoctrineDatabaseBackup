@@ -27,6 +27,8 @@ interface Backup
 
     /**
      * This method clears backup from memory.
+     *
+     * @deprecated
      */
     public static function clearMemory();
 }

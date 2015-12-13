@@ -8,8 +8,12 @@ use Doctrine\DBAL\Platforms\SqlitePlatform;
 use Lucaszz\DoctrineDatabaseBackup\Backup\Backup;
 use Lucaszz\DoctrineDatabaseBackup\Backup\MySqlBackup;
 use Lucaszz\DoctrineDatabaseBackup\Backup\SqliteBackup;
+use Lucaszz\DoctrineDatabaseBackup\Storage\InMemoryStorage;
 use Lucaszz\DoctrineDatabaseBackup\Storage\LocalStorage;
 
+/**
+ * @deprecated
+ */
 class BackupFactory
 {
     /** @var Connection */
@@ -51,7 +55,7 @@ class BackupFactory
             throw new \RuntimeException('Backup for Sqlite "in_memory" is not supported.');
         }
 
-        return new SqliteBackup($params['path'], new LocalStorage());
+        return new SqliteBackup($params['path'], InMemoryStorage::instance(), new LocalStorage());
     }
 
     private function mySqlBackup()

@@ -2,64 +2,63 @@
 
 namespace Lucaszz\DoctrineDatabaseBackup\Backup;
 
+use Lucaszz\DoctrineDatabaseBackup\Storage\InMemoryStorage;
 use Lucaszz\DoctrineDatabaseBackup\Storage\LocalStorage;
 
 class SqliteBackup implements Backup
 {
+    const BACKUP_KEY = 'sqlite';
+
     /** @var string */
     private $sourcePath;
     /** @var LocalStorage */
-    private $storage;
-    /** @var string */
-    private static $contents;
+    private $localStorage;
+    /** @var InMemoryStorage */
+    private $memoryStorage;
 
     /**
-     * @param string       $sourcePath
-     * @param LocalStorage $storage
+     * @param $sourcePath
+     * @param InMemoryStorage $memoryStorage
+     * @param LocalStorage    $localStorage
      */
-    public function __construct($sourcePath, LocalStorage $storage)
+    public function __construct($sourcePath, InMemoryStorage $memoryStorage, LocalStorage $localStorage)
     {
-        $this->sourcePath = $sourcePath;
-        $this->storage    = $storage;
+        $this->sourcePath    = $sourcePath;
+        $this->memoryStorage = $memoryStorage;
+        $this->localStorage  = $localStorage;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    /** {@inheritdoc} */
     public function create()
     {
         $sourcePath = $this->sourcePath;
 
-        if (!$this->storage->has($sourcePath)) {
+        if (!$this->localStorage->has($sourcePath)) {
             throw new \RuntimeException(sprintf("Source database '%s' should exists.", $sourcePath));
         }
 
-        static::$contents = $this->storage->read($sourcePath);
+        $this->memoryStorage->put(self::BACKUP_KEY, $this->localStorage->read($sourcePath));
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    /** {@inheritdoc} */
     public function restore()
     {
         if (!$this->isBackupCreated()) {
             throw new \RuntimeException('Backup file should be created before restore database.');
         }
 
-        $this->storage->put($this->sourcePath, static::$contents);
+        $this->localStorage->put($this->sourcePath, $this->memoryStorage->read(self::BACKUP_KEY));
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    /** {@inheritdoc} */
     public function isBackupCreated()
     {
-        return null !== static::$contents;
+        return $this->memoryStorage->has(self::BACKUP_KEY);
     }
 
     /** {@inheritdoc} */
     public static function clearMemory()
     {
-        static::$contents = null;
+        InMemoryStorage::instance()->clear();
     }
 }

@@ -3,6 +3,7 @@
 namespace Lucaszz\DoctrineDatabaseBackup\tests\Backup;
 
 use Lucaszz\DoctrineDatabaseBackup\Backup\SqliteBackup;
+use Lucaszz\DoctrineDatabaseBackup\Storage\InMemoryStorage;
 use Lucaszz\DoctrineDatabaseBackup\Storage\LocalStorage;
 use Prophecy\Prophecy\ObjectProphecy;
 
@@ -10,8 +11,10 @@ class SqliteBackupTest extends \PHPUnit_Framework_TestCase
 {
     /** @var SqliteBackup */
     private $backup;
+    /** @var ObjectProphecy|InMemoryStorage */
+    private $memoryStorage;
     /** @var ObjectProphecy|LocalStorage */
-    private $storage;
+    private $localStorage;
 
     /**
      * @test
@@ -20,8 +23,7 @@ class SqliteBackupTest extends \PHPUnit_Framework_TestCase
      */
     public function it_fails_when_source_database_file_does_not_exists()
     {
-        $this->givenMemoryIsClear();
-        $this->storage->has('/var/www/project/database/sqlite.db')->willReturn(false);
+        $this->givenDatabaseFileDoesNotExists();
 
         $this->backup->create();
     }
@@ -29,35 +31,27 @@ class SqliteBackupTest extends \PHPUnit_Framework_TestCase
     /** @test */
     public function it_creates_database_backup()
     {
-        $this->givenMemoryIsClear();
-        $this->storage->has('/var/www/project/database/sqlite.db')->willReturn(true);
-        $this->storage->read('/var/www/project/database/sqlite.db')->willReturn('contents');
+        $this->givenDatabaseFileExists();
 
         $this->backup->create();
+
+        $this->memoryStorage->put(SqliteBackup::BACKUP_KEY, 'contents')->shouldBeCalled();
     }
 
     /** @test */
     public function it_restores_database_from_backup()
     {
-        $this->givenMemoryIsClear();
-        $this->storage->has('/var/www/project/database/sqlite.db')->willReturn(true);
-        $this->storage->read('/var/www/project/database/sqlite.db')->willReturn('contents');
-
-        $this->backup->create();
-
-        $this->storage->put('/var/www/project/database/sqlite.db', 'contents')->shouldBeCalled();
+        $this->givenMemoryBackupExists();
 
         $this->backup->restore();
+
+        $this->localStorage->put('/var/www/project/database/sqlite.db', 'contents')->shouldBeCalled();
     }
 
     /** @test */
     public function it_confirms_that_backup_was_created()
     {
-        $this->givenMemoryIsClear();
-        $this->storage->has('/var/www/project/database/sqlite.db')->willReturn(true);
-        $this->storage->read('/var/www/project/database/sqlite.db')->willReturn('contents');
-
-        $this->backup->create();
+        $this->givenMemoryBackupExists();
 
         $this->assertTrue($this->backup->isBackupCreated());
     }
@@ -65,52 +59,52 @@ class SqliteBackupTest extends \PHPUnit_Framework_TestCase
     /** @test */
     public function it_confirms_that_backup_was_not_created()
     {
-        $this->givenMemoryIsClear();
-        $this->assertFalse($this->backup->isBackupCreated());
-    }
-
-    /** @test */
-    public function it_clears_memory()
-    {
-        $this->givenMemoryIsNotClear();
-
-        SqliteBackup::clearMemory();
+        $this->givenMemoryBackupDoesNotExists();
 
         $this->assertFalse($this->backup->isBackupCreated());
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    /** {@inheritdoc} */
     protected function setUp()
     {
-        $this->storage = $this->prophesize('Lucaszz\DoctrineDatabaseBackup\Storage\LocalStorage');
+        $this->memoryStorage = $this->prophesize('Lucaszz\DoctrineDatabaseBackup\Storage\InMemoryStorage');
+        $this->localStorage  = $this->prophesize('Lucaszz\DoctrineDatabaseBackup\Storage\LocalStorage');
 
-        $this->backup = new SqliteBackup('/var/www/project/database/sqlite.db', $this->storage->reveal());
+        $this->backup = new SqliteBackup(
+            '/var/www/project/database/sqlite.db',
+            $this->memoryStorage->reveal(),
+            $this->localStorage->reveal()
+        );
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    /** {@inheritdoc} */
     protected function tearDown()
     {
-        $this->storage = null;
+        $this->memoryStorage = $this->prophesize('Lucaszz\DoctrineDatabaseBackup\Storage\InMemoryStorage');
+        $this->localStorage  = $this->prophesize('Lucaszz\DoctrineDatabaseBackup\Storage\LocalStorage');
 
         $this->backup = null;
     }
 
-    private function givenMemoryIsClear()
+    private function givenDatabaseFileDoesNotExists()
     {
-        SqliteBackup::clearMemory();
+        $this->localStorage->has('/var/www/project/database/sqlite.db')->willReturn(false);
     }
 
-    private function givenMemoryIsNotClear()
+    private function givenDatabaseFileExists()
     {
-        $reflection = new \ReflectionClass($this->backup);
-        $property   = $reflection->getProperty('contents');
-        $property->setAccessible(true);
+        $this->localStorage->has('/var/www/project/database/sqlite.db')->willReturn(true);
+        $this->localStorage->read('/var/www/project/database/sqlite.db')->willReturn('contents');
+    }
 
-        $property->setValue($this->backup, 'xyz');
-        $property->setAccessible(false);
+    private function givenMemoryBackupExists()
+    {
+        $this->memoryStorage->has(SqliteBackup::BACKUP_KEY)->willReturn(true);
+        $this->memoryStorage->read(SqliteBackup::BACKUP_KEY)->willReturn('contents');
+    }
+
+    private function givenMemoryBackupDoesNotExists()
+    {
+        $this->memoryStorage->has(SqliteBackup::BACKUP_KEY)->willReturn(false);
     }
 }
