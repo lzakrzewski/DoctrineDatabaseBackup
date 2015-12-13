@@ -2,8 +2,8 @@
 
 namespace Lucaszz\DoctrineDatabaseBackup\tests\Integration;
 
-use Lucaszz\DoctrineDatabaseBackup\Backup\SqliteBackup;
 use Lucaszz\DoctrineDatabaseBackup\DoctrineDatabaseBackup;
+use Lucaszz\DoctrineDatabaseBackup\Storage\InMemoryStorage;
 use Lucaszz\DoctrineDatabaseBackup\tests\Integration\Dictionary\SqliteDictionary;
 
 class SqliteBackupTest extends IntegrationTestCase
@@ -83,6 +83,6 @@ class SqliteBackupTest extends IntegrationTestCase
 
     private function givenMemoryIsClear()
     {
-        SqliteBackup::clearMemory();
+        InMemoryStorage::instance()->clear();
     }
 }

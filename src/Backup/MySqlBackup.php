@@ -60,12 +60,6 @@ class MySqlBackup implements Backup
         return $this->memoryStorage->has(self::BACKUP_KEY);
     }
 
-    /** {@inheritdoc} */
-    public static function clearMemory()
-    {
-        InMemoryStorage::instance()->clear();
-    }
-
     private function execute($sql)
     {
         $this->connection->beginTransaction();

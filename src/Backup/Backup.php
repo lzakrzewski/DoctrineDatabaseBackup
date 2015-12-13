@@ -24,11 +24,4 @@ interface Backup
      * @throws \RuntimeException
      */
     public function restore();
-
-    /**
-     * This method clears backup from memory.
-     *
-     * @deprecated
-     */
-    public static function clearMemory();
 }
