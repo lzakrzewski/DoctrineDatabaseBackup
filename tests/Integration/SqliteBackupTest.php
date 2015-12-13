@@ -2,6 +2,7 @@
 
 namespace Lucaszz\DoctrineDatabaseBackup\tests\Integration;
 
+use Lucaszz\DoctrineDatabaseBackup\Backups;
 use Lucaszz\DoctrineDatabaseBackup\DoctrineDatabaseBackup;
 use Lucaszz\DoctrineDatabaseBackup\Storage\InMemoryStorage;
 use Lucaszz\DoctrineDatabaseBackup\tests\Integration\Dictionary\SqliteDictionary;
@@ -68,7 +69,7 @@ class SqliteBackupTest extends IntegrationTestCase
     {
         parent::setUp();
 
-        $this->backup = new DoctrineDatabaseBackup($this->entityManager);
+        $this->backup = Backups::newInstance($this->entityManager);
 
         $this->givenMemoryIsClear();
     }

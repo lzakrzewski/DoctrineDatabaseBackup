@@ -7,6 +7,8 @@ use Doctrine\DBAL\Platforms\SqlitePlatform;
 use Doctrine\ORM\EntityManager;
 use Lucaszz\DoctrineDatabaseBackup\Backup\MySqlBackup;
 use Lucaszz\DoctrineDatabaseBackup\Backup\SqliteBackup;
+use Lucaszz\DoctrineDatabaseBackup\Command\MysqldumpCommand;
+use Lucaszz\DoctrineDatabaseBackup\Storage\InMemoryStorage;
 use Lucaszz\DoctrineDatabaseBackup\Storage\LocalStorage;
 
 final class Backups
@@ -19,9 +21,9 @@ final class Backups
     public static function newInstance(EntityManager $entityManager)
     {
         $backup = self::backup($entityManager);
-        $purger = new Purger($entityManager);
+        $purger = self::purger($entityManager);
 
-        return new DoctrineDatabaseBackup($entityManager, $backup, $purger);
+        return new DoctrineDatabaseBackup($backup, $purger);
     }
 
     private function __construct()
@@ -51,13 +53,29 @@ final class Backups
             throw new \RuntimeException('Backup for Sqlite "in_memory" is not supported.');
         }
 
-        return new SqliteBackup($params['path'], new LocalStorage());
+        return new SqliteBackup($params['path'], InMemoryStorage::instance(), new LocalStorage());
     }
 
     private static function mySqlBackup(EntityManager $entityManager)
     {
-        $purger = new Purger($entityManager);
+        $params = $entityManager->getConnection()->getParams();
 
-        return new MySqlBackup($entityManager->getConnection(), $purger, new LegacyCommand());
+        if (false === isset($params['dbname'])) {
+            throw new \RuntimeException('Database name should be provided');
+        }
+
+        $host     = (isset($params['host'])) ? $params['host'] : null;
+        $user     = (isset($params['user'])) ? $params['user'] : null;
+        $password = (isset($params['password'])) ? $params['password'] : null;
+
+        $purger  = self::purger($entityManager);
+        $command = new MysqldumpCommand($params['dbname'], $host, $user, $password);
+
+        return new MySqlBackup($entityManager->getConnection(), InMemoryStorage::instance(), $purger, $command);
+    }
+
+    private static function purger(EntityManager $entityManager)
+    {
+        return new Purger($entityManager, InMemoryStorage::instance());
     }
 }
