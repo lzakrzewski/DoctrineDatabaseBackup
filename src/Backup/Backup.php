@@ -1,8 +1,8 @@
 <?php
 
-namespace Lucaszz\DoctrineDatabaseBackup\Backup\Executor;
+namespace Lucaszz\DoctrineDatabaseBackup\Backup;
 
-interface Executor
+interface Backup
 {
     /**
      * This method checks if backup was created during current PHP process.
@@ -24,9 +24,4 @@ interface Executor
      * @throws \RuntimeException
      */
     public function restore();
-
-    /**
-     * This method clears backup from memory.
-     */
-    public static function clearMemory();
 }
