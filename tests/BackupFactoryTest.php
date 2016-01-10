@@ -4,10 +4,10 @@ namespace Lucaszz\DoctrineDatabaseBackup\tests;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManager;
-use Lucaszz\DoctrineDatabaseBackup\Backups;
+use Lucaszz\DoctrineDatabaseBackup\BackupFactory;
 use Prophecy\Prophecy\ObjectProphecy;
 
-class BackupsTest extends \PHPUnit_Framework_TestCase
+class BackupFactoryTest extends \PHPUnit_Framework_TestCase
 {
     /** @var EntityManager|ObjectProphecy */
     private $entityManager;
@@ -15,58 +15,56 @@ class BackupsTest extends \PHPUnit_Framework_TestCase
     private $connection;
 
     /** @test */
-    public function it_can_create_doctrine_database_backup_with_sqlite_platform()
+    public function it_can_create_instance_of_sqlite_backup()
     {
         $this->givenSqliteDatabasePlatformWasEnabled();
 
-        $this->assertInstanceOf(
-            '\Lucaszz\DoctrineDatabaseBackup\DoctrineDatabaseBackup',
-            Backups::newInstance($this->entityManager->reveal())
-        );
+        $backup = BackupFactory::instance($this->entityManager->reveal());
+
+        $this->assertInstanceOf('\Lucaszz\DoctrineDatabaseBackup\Backup\SqliteBackup', $backup);
     }
 
     /** @test */
-    public function it_can_create_doctrine_database_backup_with_mysql_platform()
+    public function it_can_create_instance_of_mysql_backup()
     {
         $this->givenMySqlDatabasePlatformWasEnabled();
 
-        $this->assertInstanceOf(
-            '\Lucaszz\DoctrineDatabaseBackup\DoctrineDatabaseBackup',
-            Backups::newInstance($this->entityManager->reveal())
-        );
+        $backup = BackupFactory::instance($this->entityManager->reveal());
+
+        $this->assertInstanceOf('\Lucaszz\DoctrineDatabaseBackup\Backup\MySqlBackup', $backup);
     }
 
     /**
      * @test
      * @expectedException \RuntimeException
      */
-    public function it_can_not_create_doctrine_database_backup_with_unsupported_platform()
+    public function it_can_not_create_instance_of_backup_with_unsupported_platform()
     {
         $this->givenUnsupportedDatabasePlatformWasEnabled();
 
-        Backups::newInstance($this->entityManager->reveal());
+        BackupFactory::instance($this->entityManager->reveal());
     }
 
     /**
      * @test
      * @expectedException \RuntimeException
      */
-    public function it_can_not_create_doctrine_database_backup_with_sqlite_in_memory_platform()
+    public function it_can_not_instance_of_sqlite_in_memory_backup()
     {
         $this->givenSqliteInMemoryDatabasePlatformWasEnabled();
 
-        Backups::newInstance($this->entityManager->reveal());
+        BackupFactory::instance($this->entityManager->reveal());
     }
 
     /**
      * @test
      * @expectedException \RuntimeException
      */
-    public function it_can_not_create_doctrine_database_backup_with_mysql_platform_without_dbname_provided()
+    public function it_can_not_create_backup_with_mysql_platform_without_dbname_provided()
     {
         $this->givenMySqlWithoutDbnameDatabasePlatformWasEnabled();
 
-        Backups::newInstance($this->entityManager->reveal());
+        BackupFactory::instance($this->entityManager->reveal());
     }
 
     /** {@inheritdoc} */

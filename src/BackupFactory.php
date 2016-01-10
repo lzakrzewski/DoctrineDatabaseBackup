@@ -11,26 +11,9 @@ use Lucaszz\DoctrineDatabaseBackup\Command\MysqldumpCommand;
 use Lucaszz\DoctrineDatabaseBackup\Storage\InMemoryStorage;
 use Lucaszz\DoctrineDatabaseBackup\Storage\LocalStorage;
 
-final class Backups
+final class BackupFactory
 {
-    /**
-     * @param EntityManager $entityManager
-     *
-     * @return DoctrineDatabaseBackup
-     */
-    public static function newInstance(EntityManager $entityManager)
-    {
-        $backup = self::backup($entityManager);
-        $purger = self::purger($entityManager);
-
-        return new DoctrineDatabaseBackup($backup, $purger);
-    }
-
-    private function __construct()
-    {
-    }
-
-    private static function backup(EntityManager $entityManager)
+    public static function instance(EntityManager $entityManager)
     {
         $connection = $entityManager->getConnection();
 
@@ -77,5 +60,9 @@ final class Backups
     private static function purger(EntityManager $entityManager)
     {
         return new Purger($entityManager, InMemoryStorage::instance());
+    }
+
+    private function __construct()
+    {
     }
 }

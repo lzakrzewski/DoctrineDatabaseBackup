@@ -2,6 +2,7 @@
 
 namespace Lucaszz\DoctrineDatabaseBackup;
 
+use Doctrine\ORM\EntityManager;
 use Lucaszz\DoctrineDatabaseBackup\Backup\Backup;
 
 class DoctrineDatabaseBackup
@@ -12,13 +13,12 @@ class DoctrineDatabaseBackup
     private $purger;
 
     /**
-     * @param Backup $backup
-     * @param Purger $purger
+     * @param EntityManager $entityManager
      */
-    public function __construct(Backup $backup, Purger $purger)
+    public function __construct(EntityManager $entityManager)
     {
-        $this->backup = $backup;
-        $this->purger = $purger;
+        $this->backup = BackupFactory::instance($entityManager);
+        $this->purger = PurgerFactory::instance($entityManager);
     }
 
     public function restoreClearDatabase()
