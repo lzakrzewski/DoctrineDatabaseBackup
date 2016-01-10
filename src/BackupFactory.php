@@ -51,15 +51,10 @@ final class BackupFactory
         $user     = (isset($params['user'])) ? $params['user'] : null;
         $password = (isset($params['password'])) ? $params['password'] : null;
 
-        $purger  = self::purger($entityManager);
+        $purger  = PurgerFactory::instance($entityManager);
         $command = new MysqldumpCommand($params['dbname'], $host, $user, $password);
 
         return new MySqlBackup($entityManager->getConnection(), InMemoryStorage::instance(), $purger, $command);
-    }
-
-    private static function purger(EntityManager $entityManager)
-    {
-        return new Purger($entityManager, InMemoryStorage::instance());
     }
 
     private function __construct()
