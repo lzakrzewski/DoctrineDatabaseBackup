@@ -8,14 +8,17 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Doctrine\ORM\Tools\Setup;
-use Lucaszz\DoctrineDatabaseBackup\tests\Integration\Entity\TestProduct;
+use Lucaszz\DoctrineDatabaseBackup\tests\Integration\Entity\Category\TestCategory;
+use Lucaszz\DoctrineDatabaseBackup\tests\Integration\Entity\Product\TestProduct;
 
 abstract class IntegrationTestCase extends \PHPUnit_Framework_TestCase
 {
     /** @var EntityManager */
     protected $entityManager;
     /** @var EntityRepository */
-    protected $repository;
+    protected $products;
+    /** @var EntityRepository */
+    protected $categories;
 
     /**
      * {@inheritdoc}
@@ -26,7 +29,8 @@ abstract class IntegrationTestCase extends \PHPUnit_Framework_TestCase
 
         $this->setupDatabase();
 
-        $this->repository = $this->entityManager->getRepository($this->productClass());
+        $this->products   = $this->entityManager->getRepository($this->productClass());
+        $this->categories = $this->entityManager->getRepository($this->categoryClass());
     }
 
     /**
@@ -35,7 +39,8 @@ abstract class IntegrationTestCase extends \PHPUnit_Framework_TestCase
     protected function tearDown()
     {
         $this->entityManager = null;
-        $this->repository    = null;
+        $this->products      = null;
+        $this->categories    = null;
     }
 
     /**
@@ -62,11 +67,27 @@ abstract class IntegrationTestCase extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @return TestCategory
+     */
+    protected function categoryInstance()
+    {
+        return new TestCategory([]);
+    }
+
+    /**
      * @return string
      */
     protected function productClass()
     {
         return get_class($this->productInstance());
+    }
+
+    /**
+     * @return string
+     */
+    protected function categoryClass()
+    {
+        return get_class($this->categoryInstance());
     }
 
     protected function addProduct()
@@ -88,14 +109,23 @@ abstract class IntegrationTestCase extends \PHPUnit_Framework_TestCase
         }
     }
 
+    protected function givenDatabaseContainsCategories($categoriesCount)
+    {
+        for ($categoryCount = 1; $categoryCount <= $categoriesCount; ++$categoryCount) {
+            $this->entityManager->persist(new TestCategory($this->products->findAll()));
+            $this->entityManager->flush();
+        }
+    }
+
     protected function assertThatDatabaseContainProducts($expectedProductsCount)
     {
-        $this->assertCount($expectedProductsCount, $this->repository->findAll());
+        $this->assertCount($expectedProductsCount, $this->products->findAll());
     }
 
     protected function assertThatDatabaseIsClear()
     {
-        $this->assertEmpty($this->repository->findAll());
+        $this->assertEmpty($this->products->findAll());
+        $this->assertEmpty($this->categories->findAll());
     }
 
     /**

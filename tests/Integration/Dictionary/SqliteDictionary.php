@@ -30,7 +30,12 @@ trait SqliteDictionary
         $schemaTool = new SchemaTool($this->entityManager);
         $schemaTool->dropDatabase();
 
-        $class = $this->productClass();
-        $schemaTool->createSchema([$this->entityManager->getClassMetadata($class)]);
+        $productClass  = $this->productClass();
+        $categoryClass = $this->categoryClass();
+
+        $schemaTool->createSchema([
+            $this->entityManager->getClassMetadata($productClass),
+            $this->entityManager->getClassMetadata($categoryClass),
+        ]);
     }
 }

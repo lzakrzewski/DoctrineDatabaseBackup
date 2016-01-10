@@ -1,6 +1,6 @@
 <?php
 
-namespace Lucaszz\DoctrineDatabaseBackup\tests\Integration\Entity;
+namespace Lucaszz\DoctrineDatabaseBackup\tests\Integration\Entity\Product;
 
 use Doctrine\ORM\Mapping as ORM;
 

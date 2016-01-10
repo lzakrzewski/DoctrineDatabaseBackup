@@ -36,8 +36,13 @@ trait MySqlDictionary
 
         $tmpConnection->getSchemaManager()->createDatabase($nameEscaped);
 
-        $class      = $this->productClass();
+        $productClass  = $this->productClass();
+        $categoryClass = $this->categoryClass();
+
         $schemaTool = new SchemaTool($this->entityManager);
-        $schemaTool->createSchema([$this->entityManager->getClassMetadata($class)]);
+        $schemaTool->createSchema([
+            $this->entityManager->getClassMetadata($productClass),
+            $this->entityManager->getClassMetadata($categoryClass),
+        ]);
     }
 }
