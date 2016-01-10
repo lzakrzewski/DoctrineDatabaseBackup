@@ -1,6 +1,6 @@
 # DoctrineDatabaseBackup
 
-[![Build Status](https://travis-ci.org/Lucaszz/DoctrineDatabaseBackup.svg)](https://travis-ci.org/Lucaszz/DoctrineDatabaseBackup) [![Latest Stable Version](https://poser.pugx.org/lucaszz/doctrine-database-backup/v/stable)](https://packagist.org/packages/lucaszz/doctrine-database-backup) [![Total Downloads](https://poser.pugx.org/lucaszz/doctrine-database-backup/downloads)](https://packagist.org/packages/lucaszz/doctrine-database-backup) 
+[![Build Status](https://travis-ci.org/Lucaszz/DoctrineDatabaseBackup.svg)](https://travis-ci.org/Lucaszz/DoctrineDatabaseBackup) [![Latest Stable Version](https://poser.pugx.org/lucaszz/doctrine-database-backup/v/stable)](https://packagist.org/packages/lucaszz/doctrine-database-backup) [![Total Downloads](https://poser.pugx.org/lucaszz/doctrine-database-backup/downloads)](https://packagist.org/packages/lucaszz/doctrine-database-backup) [![Coverage Status](https://coveralls.io/repos/Lucaszz/DoctrineDatabaseBackup/badge.svg?branch=master&service=github)](https://coveralls.io/github/Lucaszz/DoctrineDatabaseBackup?branch=master) 
 
 DoctrineDatabaseBackup is simple library for speed up tests in your app.
 It could be used for **PHPUnit** tests or **Behat** tests running from command line.
@@ -34,7 +34,7 @@ Installation
 Require the library with composer:
 
 ```sh
-composer require lucaszz/doctrine-database-backup "dev-master"
+composer require lucaszz/doctrine-database-backup "~1.1"
 ```
 
 Basic usage (PHPUnit example)
@@ -66,17 +66,17 @@ protected function setUp()
     $this->entityManager = $this->createEntityManager();
     $backup = new DoctrineDatabaseBackup($this->entityManager);
     
-    if (!$backup->getExecutor()->isBackupCreated()) {
+    if (!$backup->getBackup()->isBackupCreated()) {
         $backup->getPurger()->purge();
 
         //your fixtures
         $this->entityManager->persist(new TestProduct('Iron', 99));
         $this->entityManager->flush();
 
-        $backup->getExecutor()->create();
+        $backup->getBackup()->create();
     }
 
-    $backup->getExecutor()->restore();
+    $backup->getBackup()->restore();
 }
 ```
 

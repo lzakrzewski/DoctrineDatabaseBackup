@@ -1,10 +1,10 @@
 <?php
 
-namespace Lucaszz\DoctrineDatabaseBackup\tests\Backup\Executor;
+namespace Lucaszz\DoctrineDatabaseBackup\tests\Integration;
 
-use Lucaszz\DoctrineDatabaseBackup\Backup\Purger;
+use Lucaszz\DoctrineDatabaseBackup\Purger;
+use Lucaszz\DoctrineDatabaseBackup\Storage\InMemoryStorage;
 use Lucaszz\DoctrineDatabaseBackup\tests\Integration\Dictionary\SqliteDictionary;
-use Lucaszz\DoctrineDatabaseBackup\tests\Integration\IntegrationTestCase;
 
 class PurgerTest extends IntegrationTestCase
 {
@@ -37,6 +37,17 @@ class PurgerTest extends IntegrationTestCase
         $this->assertThatDatabaseIsClear();
     }
 
+    /** @test */
+    public function it_purges_database_with_related_entities()
+    {
+        $this->givenDatabaseContainsProducts(5);
+        $this->givenDatabaseContainsCategories(5);
+
+        $this->purger->purge();
+
+        $this->assertThatDatabaseIsClear();
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -44,7 +55,9 @@ class PurgerTest extends IntegrationTestCase
     {
         parent::setUp();
 
-        $this->purger = new Purger($this->entityManager);
+        InMemoryStorage::instance()->clear();
+
+        $this->purger = new Purger($this->entityManager, InMemoryStorage::instance());
     }
 
     /**

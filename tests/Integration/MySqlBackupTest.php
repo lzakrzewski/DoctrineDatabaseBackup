@@ -2,8 +2,8 @@
 
 namespace Lucaszz\DoctrineDatabaseBackup\tests\Integration;
 
-use Lucaszz\DoctrineDatabaseBackup\Backup\DoctrineDatabaseBackup;
-use Lucaszz\DoctrineDatabaseBackup\Backup\Executor\MySqlExecutor;
+use Lucaszz\DoctrineDatabaseBackup\DoctrineDatabaseBackup;
+use Lucaszz\DoctrineDatabaseBackup\Storage\InMemoryStorage;
 use Lucaszz\DoctrineDatabaseBackup\tests\Integration\Dictionary\MySqlDictionary;
 
 class MySqlBackupTest extends IntegrationTestCase
@@ -18,7 +18,7 @@ class MySqlBackupTest extends IntegrationTestCase
     {
         $this->givenDatabaseIsClear();
 
-        $this->backup->getExecutor()->create();
+        $this->backup->getBackup()->create();
         $this->addProduct();
 
         $this->backup->restoreClearDatabase();
@@ -31,10 +31,10 @@ class MySqlBackupTest extends IntegrationTestCase
     {
         $this->givenDatabaseContainsProducts(5);
 
-        $this->backup->getExecutor()->create();
+        $this->backup->getBackup()->create();
         $this->addProduct();
 
-        $this->backup->getExecutor()->restore();
+        $this->backup->getBackup()->restore();
 
         $this->assertThatDatabaseContainProducts(5);
     }
@@ -52,15 +52,15 @@ class MySqlBackupTest extends IntegrationTestCase
     /** @test */
     public function it_confirms_that_backup_was_created()
     {
-        $this->backup->getExecutor()->create();
+        $this->backup->getBackup()->create();
 
-        $this->assertTrue($this->backup->getExecutor()->isBackupCreated());
+        $this->assertTrue($this->backup->getBackup()->isBackupCreated());
     }
 
     /** @test */
     public function it_confirms_that_backup_was_not_created()
     {
-        $this->assertFalse($this->backup->getExecutor()->isBackupCreated());
+        $this->assertFalse($this->backup->getBackup()->isBackupCreated());
     }
 
     /** {@inheritdoc} */
@@ -83,6 +83,6 @@ class MySqlBackupTest extends IntegrationTestCase
 
     private function givenMemoryIsClear()
     {
-        MySqlExecutor::clearMemory();
+        InMemoryStorage::instance()->clear();
     }
 }

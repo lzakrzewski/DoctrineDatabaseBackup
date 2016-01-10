@@ -12,12 +12,12 @@ trait SqliteDictionary
      */
     protected function getParams()
     {
-        return array(
-            'driver' => 'pdo_sqlite',
-            'user' => 'root',
+        return [
+            'driver'   => 'pdo_sqlite',
+            'user'     => 'root',
             'password' => '',
-            'path' => __DIR__.'/../database/sqlite.db',
-        );
+            'path'     => __DIR__.'/../database/sqlite.db',
+        ];
     }
 
     protected function setupDatabase()
@@ -30,7 +30,12 @@ trait SqliteDictionary
         $schemaTool = new SchemaTool($this->entityManager);
         $schemaTool->dropDatabase();
 
-        $class = $this->productClass();
-        $schemaTool->createSchema(array($this->entityManager->getClassMetadata($class)));
+        $productClass  = $this->productClass();
+        $categoryClass = $this->categoryClass();
+
+        $schemaTool->createSchema([
+            $this->entityManager->getClassMetadata($productClass),
+            $this->entityManager->getClassMetadata($categoryClass),
+        ]);
     }
 }

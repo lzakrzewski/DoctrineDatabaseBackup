@@ -1,6 +1,6 @@
 <?php
 
-namespace Lucaszz\DoctrineDatabaseBackup\tests\Backup\Executor;
+namespace Lucaszz\DoctrineDatabaseBackup\tests\Integration;
 
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
@@ -9,9 +9,9 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\ORM\Tools\Setup;
-use Lucaszz\DoctrineDatabaseBackup\Backup\DoctrineDatabaseBackup;
-use Lucaszz\DoctrineDatabaseBackup\Backup\Executor\SqliteExecutor;
-use Lucaszz\DoctrineDatabaseBackup\tests\Integration\Entity\TestProduct;
+use Lucaszz\DoctrineDatabaseBackup\DoctrineDatabaseBackup;
+use Lucaszz\DoctrineDatabaseBackup\Storage\InMemoryStorage;
+use Lucaszz\DoctrineDatabaseBackup\tests\Integration\Entity\Product\TestProduct;
 
 class AdvancedPHPUnitUsageExampleTest extends \PHPUnit_Framework_TestCase
 {
@@ -23,12 +23,12 @@ class AdvancedPHPUnitUsageExampleTest extends \PHPUnit_Framework_TestCase
         $this->entityManager->persist(new TestProduct('Teapot', 25));
         $this->entityManager->flush();
 
-        $this->assertCount(2, $this->entityManager->getRepository('\Lucaszz\DoctrineDatabaseBackup\tests\Integration\Entity\TestProduct')->findAll());
+        $this->assertCount(2, $this->entityManager->getRepository('\Lucaszz\DoctrineDatabaseBackup\tests\Integration\Entity\Product\TestProduct')->findAll());
     }
 
     public function testThatDatabaseContainsFixtures()
     {
-        $this->assertCount(1, $this->entityManager->getRepository('\Lucaszz\DoctrineDatabaseBackup\tests\Integration\Entity\TestProduct')->findAll());
+        $this->assertCount(1, $this->entityManager->getRepository('\Lucaszz\DoctrineDatabaseBackup\tests\Integration\Entity\Product\TestProduct')->findAll());
     }
 
     /**
@@ -40,7 +40,7 @@ class AdvancedPHPUnitUsageExampleTest extends \PHPUnit_Framework_TestCase
         self::setupDatabase($entityManager);
 
         //Should be called only if another test in current PHP process created backup.
-        SqliteExecutor::clearMemory();
+        InMemoryStorage::instance()->clear();
     }
 
     /** {@inheritdoc} */
@@ -49,19 +49,19 @@ class AdvancedPHPUnitUsageExampleTest extends \PHPUnit_Framework_TestCase
         parent::setUp();
 
         $this->entityManager = $this->createEntityManager();
-        $backup = new DoctrineDatabaseBackup($this->entityManager);
+        $backup              = new DoctrineDatabaseBackup($this->entityManager);
 
-        if (!$backup->getExecutor()->isBackupCreated()) {
+        if (!$backup->getBackup()->isBackupCreated()) {
             $backup->getPurger()->purge();
 
             //your fixtures
             $this->entityManager->persist(new TestProduct('Iron', 99));
             $this->entityManager->flush();
 
-            $backup->getExecutor()->create();
+            $backup->getBackup()->create();
         }
 
-        $backup->getExecutor()->restore();
+        $backup->getBackup()->restore();
     }
 
     /** {@inheritdoc} */
@@ -75,7 +75,7 @@ class AdvancedPHPUnitUsageExampleTest extends \PHPUnit_Framework_TestCase
      */
     private static function createEntityManager()
     {
-        $entityPath = array(__DIR__.'/Entity');
+        $entityPath = [__DIR__.'/Entity/Product'];
 
         $config = Setup::createAnnotationMetadataConfiguration($entityPath, false);
         $driver = new AnnotationDriver(new AnnotationReader(), $entityPath);
@@ -98,9 +98,9 @@ class AdvancedPHPUnitUsageExampleTest extends \PHPUnit_Framework_TestCase
         $schemaTool = new SchemaTool($entityManager);
         $schemaTool->dropDatabase();
 
-        $class = 'Lucaszz\DoctrineDatabaseBackup\tests\Integration\Entity\TestProduct';
+        $class = 'Lucaszz\DoctrineDatabaseBackup\tests\Integration\Entity\Product\TestProduct';
 
-        $schemaTool->createSchema(array($entityManager->getClassMetadata($class)));
+        $schemaTool->createSchema([$entityManager->getClassMetadata($class)]);
     }
 
     /**
@@ -108,11 +108,11 @@ class AdvancedPHPUnitUsageExampleTest extends \PHPUnit_Framework_TestCase
      */
     private static function getParams()
     {
-        return array(
-            'driver' => 'pdo_sqlite',
-            'user' => 'root',
+        return [
+            'driver'   => 'pdo_sqlite',
+            'user'     => 'root',
             'password' => '',
-            'path' => __DIR__.'/database/sqlite.db',
-        );
+            'path'     => __DIR__.'/database/sqlite.db',
+        ];
     }
 }

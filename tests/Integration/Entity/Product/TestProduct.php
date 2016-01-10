@@ -1,6 +1,6 @@
 <?php
 
-namespace Lucaszz\DoctrineDatabaseBackup\tests\Integration\Entity;
+namespace Lucaszz\DoctrineDatabaseBackup\tests\Integration\Entity\Product;
 
 use Doctrine\ORM\Mapping as ORM;
 
@@ -33,7 +33,7 @@ class TestProduct
      */
     public function __construct($name, $price)
     {
-        $this->name = $name;
+        $this->name  = $name;
         $this->price = $price;
     }
 }
