@@ -46,6 +46,16 @@ class LocalStorageTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('contents', $this->storage->read('vfs://project/source.db'));
     }
 
+    /**
+     * @test
+     *
+     * @expectedException \RuntimeException
+     */
+    public function it_can_not_write_file_to_not_existing_directory()
+    {
+        $this->storage->put('vfs://project/not-existing/source.db', 'contents');
+    }
+
     /** @test */
     public function it_checks_if_file_exists()
     {
