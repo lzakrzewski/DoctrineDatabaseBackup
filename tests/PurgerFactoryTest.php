@@ -1,9 +1,9 @@
 <?php
 
-namespace Lucaszz\DoctrineDatabaseBackup\tests;
+namespace Lzakrzewski\DoctrineDatabaseBackup\tests;
 
 use Doctrine\ORM\EntityManager;
-use Lucaszz\DoctrineDatabaseBackup\PurgerFactory;
+use Lzakrzewski\DoctrineDatabaseBackup\PurgerFactory;
 use Prophecy\Prophecy\ObjectProphecy;
 
 class PurgerFactoryTest extends \PHPUnit_Framework_TestCase
@@ -14,7 +14,7 @@ class PurgerFactoryTest extends \PHPUnit_Framework_TestCase
     /** @test */
     public function it_creates_instance_of_purger()
     {
-        $this->assertInstanceOf('\Lucaszz\DoctrineDatabaseBackup\Purger', PurgerFactory::instance($this->entityManager->reveal()));
+        $this->assertInstanceOf('\Lzakrzewski\DoctrineDatabaseBackup\Purger', PurgerFactory::instance($this->entityManager->reveal()));
     }
 
     /** {@inheritdoc} */

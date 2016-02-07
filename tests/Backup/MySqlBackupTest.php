@@ -1,12 +1,12 @@
 <?php
 
-namespace Lucaszz\DoctrineDatabaseBackup\tests\Backup;
+namespace Lzakrzewski\DoctrineDatabaseBackup\tests\Backup;
 
 use Doctrine\DBAL\Connection;
-use Lucaszz\DoctrineDatabaseBackup\Backup\MySqlBackup;
-use Lucaszz\DoctrineDatabaseBackup\Purger;
-use Lucaszz\DoctrineDatabaseBackup\Storage\InMemoryStorage;
-use Lucaszz\DoctrineDatabaseBackup\tests\FakeLegacyCommand;
+use Lzakrzewski\DoctrineDatabaseBackup\Backup\MySqlBackup;
+use Lzakrzewski\DoctrineDatabaseBackup\Purger;
+use Lzakrzewski\DoctrineDatabaseBackup\Storage\InMemoryStorage;
+use Lzakrzewski\DoctrineDatabaseBackup\tests\FakeLegacyCommand;
 use Prophecy\Prophecy\ObjectProphecy;
 
 class MySqlBackupTest extends \PHPUnit_Framework_TestCase
@@ -95,9 +95,9 @@ class MySqlBackupTest extends \PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $this->connection    = $this->prophesize('\Doctrine\DBAL\Connection');
-        $this->memoryStorage = $this->prophesize('\Lucaszz\DoctrineDatabaseBackup\Storage\InMemoryStorage');
-        $this->purger        = $this->prophesize('\Lucaszz\DoctrineDatabaseBackup\Purger');
-        $this->command       = $this->prophesize('\Lucaszz\DoctrineDatabaseBackup\Command\Command');
+        $this->memoryStorage = $this->prophesize('\Lzakrzewski\DoctrineDatabaseBackup\Storage\InMemoryStorage');
+        $this->purger        = $this->prophesize('\Lzakrzewski\DoctrineDatabaseBackup\Purger');
+        $this->command       = $this->prophesize('\Lzakrzewski\DoctrineDatabaseBackup\Command\Command');
 
         $this->backup = new MySqlBackup($this->connection->reveal(), $this->memoryStorage->reveal(), $this->purger->reveal(), $this->command->reveal());
     }

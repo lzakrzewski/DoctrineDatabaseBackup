@@ -1,6 +1,6 @@
 <?php
 
-namespace Lucaszz\DoctrineDatabaseBackup\tests\Command;
+namespace Lzakrzewski\DoctrineDatabaseBackup\tests\Command;
 
 class MysqldumpCommandTest extends \PHPUnit_Framework_TestCase
 {

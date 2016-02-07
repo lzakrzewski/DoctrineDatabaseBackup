@@ -1,9 +1,9 @@
 <?php
 
-namespace Lucaszz\DoctrineDatabaseBackup;
+namespace Lzakrzewski\DoctrineDatabaseBackup;
 
 use Doctrine\ORM\EntityManager;
-use Lucaszz\DoctrineDatabaseBackup\Backup\Backup;
+use Lzakrzewski\DoctrineDatabaseBackup\Backup\Backup;
 
 class DoctrineDatabaseBackup
 {

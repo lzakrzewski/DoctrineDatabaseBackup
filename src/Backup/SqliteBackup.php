@@ -1,9 +1,9 @@
 <?php
 
-namespace Lucaszz\DoctrineDatabaseBackup\Backup;
+namespace Lzakrzewski\DoctrineDatabaseBackup\Backup;
 
-use Lucaszz\DoctrineDatabaseBackup\Storage\InMemoryStorage;
-use Lucaszz\DoctrineDatabaseBackup\Storage\LocalStorage;
+use Lzakrzewski\DoctrineDatabaseBackup\Storage\InMemoryStorage;
+use Lzakrzewski\DoctrineDatabaseBackup\Storage\LocalStorage;
 
 class SqliteBackup implements Backup
 {

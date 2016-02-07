@@ -1,8 +1,8 @@
 <?php
 
-namespace Lucaszz\DoctrineDatabaseBackup\tests\Storage;
+namespace Lzakrzewski\DoctrineDatabaseBackup\tests\Storage;
 
-use Lucaszz\DoctrineDatabaseBackup\Storage\LocalStorage;
+use Lzakrzewski\DoctrineDatabaseBackup\Storage\LocalStorage;
 use org\bovigo\vfs\vfsStream;
 
 class LocalStorageTest extends \PHPUnit_Framework_TestCase

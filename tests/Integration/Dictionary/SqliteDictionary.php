@@ -1,6 +1,6 @@
 <?php
 
-namespace Lucaszz\DoctrineDatabaseBackup\tests\Integration\Dictionary;
+namespace Lzakrzewski\DoctrineDatabaseBackup\tests\Integration\Dictionary;
 
 use Doctrine\DBAL\DriverManager;
 use Doctrine\ORM\Tools\SchemaTool;

@@ -10,13 +10,13 @@
  * and Jonathan H. Wage <jonwage@gmail.com>, Benjamin Eberlei <kontakt@beberlei.de>
  */
 
-namespace Lucaszz\DoctrineDatabaseBackup;
+namespace Lzakrzewski\DoctrineDatabaseBackup;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Internal\CommitOrderCalculator;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Lucaszz\DoctrineDatabaseBackup\Storage\InMemoryStorage;
+use Lzakrzewski\DoctrineDatabaseBackup\Storage\InMemoryStorage;
 
 class Purger
 {

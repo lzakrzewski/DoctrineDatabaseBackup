@@ -1,6 +1,6 @@
 <?php
 
-namespace Lucaszz\DoctrineDatabaseBackup\Storage;
+namespace Lzakrzewski\DoctrineDatabaseBackup\Storage;
 
 class InMemoryStorage implements Storage
 {

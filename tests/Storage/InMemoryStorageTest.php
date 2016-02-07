@@ -1,8 +1,8 @@
 <?php
 
-namespace Lucaszz\DoctrineDatabaseBackup\tests\Storage;
+namespace Lzakrzewski\DoctrineDatabaseBackup\tests\Storage;
 
-use Lucaszz\DoctrineDatabaseBackup\Storage\InMemoryStorage;
+use Lzakrzewski\DoctrineDatabaseBackup\Storage\InMemoryStorage;
 
 class InMemoryStorageTest extends \PHPUnit_Framework_TestCase
 {

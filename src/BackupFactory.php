@@ -1,15 +1,15 @@
 <?php
 
-namespace Lucaszz\DoctrineDatabaseBackup;
+namespace Lzakrzewski\DoctrineDatabaseBackup;
 
 use Doctrine\DBAL\Platforms\MySqlPlatform;
 use Doctrine\DBAL\Platforms\SqlitePlatform;
 use Doctrine\ORM\EntityManager;
-use Lucaszz\DoctrineDatabaseBackup\Backup\MySqlBackup;
-use Lucaszz\DoctrineDatabaseBackup\Backup\SqliteBackup;
-use Lucaszz\DoctrineDatabaseBackup\Command\MysqldumpCommand;
-use Lucaszz\DoctrineDatabaseBackup\Storage\InMemoryStorage;
-use Lucaszz\DoctrineDatabaseBackup\Storage\LocalStorage;
+use Lzakrzewski\DoctrineDatabaseBackup\Backup\MySqlBackup;
+use Lzakrzewski\DoctrineDatabaseBackup\Backup\SqliteBackup;
+use Lzakrzewski\DoctrineDatabaseBackup\Command\MysqldumpCommand;
+use Lzakrzewski\DoctrineDatabaseBackup\Storage\InMemoryStorage;
+use Lzakrzewski\DoctrineDatabaseBackup\Storage\LocalStorage;
 
 final class BackupFactory
 {

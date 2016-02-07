@@ -1,8 +1,8 @@
 <?php
 
-namespace Lucaszz\DoctrineDatabaseBackup\tests\Command;
+namespace Lzakrzewski\DoctrineDatabaseBackup\tests\Command;
 
-use Lucaszz\DoctrineDatabaseBackup\Command\MysqldumpCommand;
+use Lzakrzewski\DoctrineDatabaseBackup\Command\MysqldumpCommand;
 
 class MysqldumpDummyCommand extends MysqldumpCommand
 {

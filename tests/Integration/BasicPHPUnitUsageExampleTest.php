@@ -1,6 +1,6 @@
 <?php
 
-namespace Lucaszz\DoctrineDatabaseBackup\tests\Integration;
+namespace Lzakrzewski\DoctrineDatabaseBackup\tests\Integration;
 
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
@@ -9,9 +9,9 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\ORM\Tools\Setup;
-use Lucaszz\DoctrineDatabaseBackup\DoctrineDatabaseBackup;
-use Lucaszz\DoctrineDatabaseBackup\Storage\InMemoryStorage;
-use Lucaszz\DoctrineDatabaseBackup\tests\Integration\Entity\Product\TestProduct;
+use Lzakrzewski\DoctrineDatabaseBackup\DoctrineDatabaseBackup;
+use Lzakrzewski\DoctrineDatabaseBackup\Storage\InMemoryStorage;
+use Lzakrzewski\DoctrineDatabaseBackup\tests\Integration\Entity\Product\TestProduct;
 
 class BasicPHPUnitUsageExampleTest extends \PHPUnit_Framework_TestCase
 {
@@ -23,12 +23,12 @@ class BasicPHPUnitUsageExampleTest extends \PHPUnit_Framework_TestCase
         $this->entityManager->persist(new TestProduct('Teapot', 25));
         $this->entityManager->flush();
 
-        $this->assertCount(1, $this->entityManager->getRepository('\Lucaszz\DoctrineDatabaseBackup\tests\Integration\Entity\Product\TestProduct')->findAll());
+        $this->assertCount(1, $this->entityManager->getRepository('\Lzakrzewski\DoctrineDatabaseBackup\tests\Integration\Entity\Product\TestProduct')->findAll());
     }
 
     public function testThatDatabaseIsClear()
     {
-        $this->assertCount(0, $this->entityManager->getRepository('\Lucaszz\DoctrineDatabaseBackup\tests\Integration\Entity\Product\TestProduct')->findAll());
+        $this->assertCount(0, $this->entityManager->getRepository('\Lzakrzewski\DoctrineDatabaseBackup\tests\Integration\Entity\Product\TestProduct')->findAll());
     }
 
     /**
@@ -88,7 +88,7 @@ class BasicPHPUnitUsageExampleTest extends \PHPUnit_Framework_TestCase
         $schemaTool = new SchemaTool($entityManager);
         $schemaTool->dropDatabase();
 
-        $class = 'Lucaszz\DoctrineDatabaseBackup\tests\Integration\Entity\Product\TestProduct';
+        $class = 'Lzakrzewski\DoctrineDatabaseBackup\tests\Integration\Entity\Product\TestProduct';
 
         $schemaTool->createSchema([$entityManager->getClassMetadata($class)]);
     }

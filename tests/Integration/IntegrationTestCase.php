@@ -1,6 +1,6 @@
 <?php
 
-namespace Lucaszz\DoctrineDatabaseBackup\tests\Integration;
+namespace Lzakrzewski\DoctrineDatabaseBackup\tests\Integration;
 
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
@@ -8,8 +8,8 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Doctrine\ORM\Tools\Setup;
-use Lucaszz\DoctrineDatabaseBackup\tests\Integration\Entity\Category\TestCategory;
-use Lucaszz\DoctrineDatabaseBackup\tests\Integration\Entity\Product\TestProduct;
+use Lzakrzewski\DoctrineDatabaseBackup\tests\Integration\Entity\Category\TestCategory;
+use Lzakrzewski\DoctrineDatabaseBackup\tests\Integration\Entity\Product\TestProduct;
 
 abstract class IntegrationTestCase extends \PHPUnit_Framework_TestCase
 {

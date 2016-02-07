@@ -1,6 +1,6 @@
 <?php
 
-namespace Lucaszz\DoctrineDatabaseBackup\Backup;
+namespace Lzakrzewski\DoctrineDatabaseBackup\Backup;
 
 interface Backup
 {

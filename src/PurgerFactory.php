@@ -1,9 +1,9 @@
 <?php
 
-namespace Lucaszz\DoctrineDatabaseBackup;
+namespace Lzakrzewski\DoctrineDatabaseBackup;
 
 use Doctrine\ORM\EntityManager;
-use Lucaszz\DoctrineDatabaseBackup\Storage\InMemoryStorage;
+use Lzakrzewski\DoctrineDatabaseBackup\Storage\InMemoryStorage;
 
 final class PurgerFactory
 {

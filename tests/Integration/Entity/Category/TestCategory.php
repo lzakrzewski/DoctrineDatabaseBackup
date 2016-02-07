@@ -1,10 +1,10 @@
 <?php
 
-namespace Lucaszz\DoctrineDatabaseBackup\tests\Integration\Entity\Category;
+namespace Lzakrzewski\DoctrineDatabaseBackup\tests\Integration\Entity\Category;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use Lucaszz\DoctrineDatabaseBackup\tests\Integration\Entity\Product\TestProduct;
+use Lzakrzewski\DoctrineDatabaseBackup\tests\Integration\Entity\Product\TestProduct;
 
 /**
  * @ORM\Entity
@@ -22,7 +22,7 @@ class TestCategory
     /**
      * @var TestProduct[]|ArrayCollection
      *
-     * @ORM\ManyToMany(targetEntity="Lucaszz\DoctrineDatabaseBackup\tests\Integration\Entity\Product\TestProduct", cascade={"ALL"}, orphanRemoval=true, fetch="EAGER")
+     * @ORM\ManyToMany(targetEntity="Lzakrzewski\DoctrineDatabaseBackup\tests\Integration\Entity\Product\TestProduct", cascade={"ALL"}, orphanRemoval=true, fetch="EAGER")
      * @ORM\JoinTable(
      *      name="category_products",
      *      joinColumns={@ORM\JoinColumn(name="category_id", referencedColumnName="id")},

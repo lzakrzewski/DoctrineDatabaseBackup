@@ -1,11 +1,11 @@
 <?php
 
-namespace Lucaszz\DoctrineDatabaseBackup\Backup;
+namespace Lzakrzewski\DoctrineDatabaseBackup\Backup;
 
 use Doctrine\DBAL\Connection;
-use Lucaszz\DoctrineDatabaseBackup\Command\Command;
-use Lucaszz\DoctrineDatabaseBackup\Purger;
-use Lucaszz\DoctrineDatabaseBackup\Storage\InMemoryStorage;
+use Lzakrzewski\DoctrineDatabaseBackup\Command\Command;
+use Lzakrzewski\DoctrineDatabaseBackup\Purger;
+use Lzakrzewski\DoctrineDatabaseBackup\Storage\InMemoryStorage;
 
 class MySqlBackup implements Backup
 {

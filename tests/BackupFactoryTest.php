@@ -1,10 +1,10 @@
 <?php
 
-namespace Lucaszz\DoctrineDatabaseBackup\tests;
+namespace Lzakrzewski\DoctrineDatabaseBackup\tests;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManager;
-use Lucaszz\DoctrineDatabaseBackup\BackupFactory;
+use Lzakrzewski\DoctrineDatabaseBackup\BackupFactory;
 use Prophecy\Prophecy\ObjectProphecy;
 
 class BackupFactoryTest extends \PHPUnit_Framework_TestCase
@@ -21,7 +21,7 @@ class BackupFactoryTest extends \PHPUnit_Framework_TestCase
 
         $backup = BackupFactory::instance($this->entityManager->reveal());
 
-        $this->assertInstanceOf('\Lucaszz\DoctrineDatabaseBackup\Backup\SqliteBackup', $backup);
+        $this->assertInstanceOf('\Lzakrzewski\DoctrineDatabaseBackup\Backup\SqliteBackup', $backup);
     }
 
     /** @test */
@@ -31,7 +31,7 @@ class BackupFactoryTest extends \PHPUnit_Framework_TestCase
 
         $backup = BackupFactory::instance($this->entityManager->reveal());
 
-        $this->assertInstanceOf('\Lucaszz\DoctrineDatabaseBackup\Backup\MySqlBackup', $backup);
+        $this->assertInstanceOf('\Lzakrzewski\DoctrineDatabaseBackup\Backup\MySqlBackup', $backup);
     }
 
     /**

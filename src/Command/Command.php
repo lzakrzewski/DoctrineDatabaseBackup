@@ -1,6 +1,6 @@
 <?php
 
-namespace Lucaszz\DoctrineDatabaseBackup\Command;
+namespace Lzakrzewski\DoctrineDatabaseBackup\Command;
 
 interface Command
 {

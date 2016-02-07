@@ -1,10 +1,10 @@
 <?php
 
-namespace Lucaszz\DoctrineDatabaseBackup\tests\Backup;
+namespace Lzakrzewski\DoctrineDatabaseBackup\tests\Backup;
 
-use Lucaszz\DoctrineDatabaseBackup\Backup\SqliteBackup;
-use Lucaszz\DoctrineDatabaseBackup\Storage\InMemoryStorage;
-use Lucaszz\DoctrineDatabaseBackup\Storage\LocalStorage;
+use Lzakrzewski\DoctrineDatabaseBackup\Backup\SqliteBackup;
+use Lzakrzewski\DoctrineDatabaseBackup\Storage\InMemoryStorage;
+use Lzakrzewski\DoctrineDatabaseBackup\Storage\LocalStorage;
 use Prophecy\Prophecy\ObjectProphecy;
 
 class SqliteBackupTest extends \PHPUnit_Framework_TestCase
@@ -67,8 +67,8 @@ class SqliteBackupTest extends \PHPUnit_Framework_TestCase
     /** {@inheritdoc} */
     protected function setUp()
     {
-        $this->memoryStorage = $this->prophesize('Lucaszz\DoctrineDatabaseBackup\Storage\InMemoryStorage');
-        $this->localStorage  = $this->prophesize('Lucaszz\DoctrineDatabaseBackup\Storage\LocalStorage');
+        $this->memoryStorage = $this->prophesize('Lzakrzewski\DoctrineDatabaseBackup\Storage\InMemoryStorage');
+        $this->localStorage  = $this->prophesize('Lzakrzewski\DoctrineDatabaseBackup\Storage\LocalStorage');
 
         $this->backup = new SqliteBackup(
             '/var/www/project/database/sqlite.db',
@@ -80,8 +80,8 @@ class SqliteBackupTest extends \PHPUnit_Framework_TestCase
     /** {@inheritdoc} */
     protected function tearDown()
     {
-        $this->memoryStorage = $this->prophesize('Lucaszz\DoctrineDatabaseBackup\Storage\InMemoryStorage');
-        $this->localStorage  = $this->prophesize('Lucaszz\DoctrineDatabaseBackup\Storage\LocalStorage');
+        $this->memoryStorage = $this->prophesize('Lzakrzewski\DoctrineDatabaseBackup\Storage\InMemoryStorage');
+        $this->localStorage  = $this->prophesize('Lzakrzewski\DoctrineDatabaseBackup\Storage\LocalStorage');
 
         $this->backup = null;
     }

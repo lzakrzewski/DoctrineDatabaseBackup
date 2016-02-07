@@ -1,6 +1,6 @@
 # DoctrineDatabaseBackup
 
-[![Build Status](https://travis-ci.org/Lucaszz/DoctrineDatabaseBackup.svg)](https://travis-ci.org/Lucaszz/DoctrineDatabaseBackup) [![Latest Stable Version](https://poser.pugx.org/lucaszz/doctrine-database-backup/v/stable)](https://packagist.org/packages/lucaszz/doctrine-database-backup) [![Total Downloads](https://poser.pugx.org/lucaszz/doctrine-database-backup/downloads)](https://packagist.org/packages/lucaszz/doctrine-database-backup) [![Coverage Status](https://coveralls.io/repos/Lucaszz/DoctrineDatabaseBackup/badge.svg?branch=master&service=github)](https://coveralls.io/github/Lucaszz/DoctrineDatabaseBackup?branch=master) 
+[![Build Status](https://travis-ci.org/lzakrzewski/DoctrineDatabaseBackup.svg)](https://travis-ci.org/lzakrzewski/DoctrineDatabaseBackup) [![Latest Stable Version](https://poser.pugx.org/lucaszz/doctrine-database-backup/v/stable)](https://packagist.org/packages/lucaszz/doctrine-database-backup) [![Total Downloads](https://poser.pugx.org/lucaszz/doctrine-database-backup/downloads)](https://packagist.org/packages/lucaszz/doctrine-database-backup) [![Coverage Status](https://coveralls.io/repos/lzakrzewski/DoctrineDatabaseBackup/badge.svg?branch=master&service=github)](https://coveralls.io/github/lzakrzewski/DoctrineDatabaseBackup?branch=master) 
 
 DoctrineDatabaseBackup is simple library for speed up tests in your app.
 It could be used for **PHPUnit** tests or **Behat** tests running from command line.
@@ -34,7 +34,7 @@ Installation
 Require the library with composer:
 
 ```sh
-composer require lucaszz/doctrine-database-backup "~1.1"
+composer require lzakrzewski/doctrine-database-backup "~1.1"
 ```
 
 Basic usage (PHPUnit example)
@@ -53,7 +53,7 @@ protected function setUp()
 ```
 
 This database setup prepares clear database before every test.
-[Full working example](https://github.com/Lucaszz/DoctrineDatabaseBackup/blob/master/tests/Integration/BasicPHPUnitUsageExampleTest.php).
+[Full working example](https://github.com/lzakrzewski/DoctrineDatabaseBackup/blob/master/tests/Integration/BasicPHPUnitUsageExampleTest.php).
 
 Advanced usage (PHPUnit example)
 --------
@@ -81,7 +81,7 @@ protected function setUp()
 ```
 
 This database setup database with your fixtures before every test.
-[Full working example](https://github.com/Lucaszz/DoctrineDatabaseBackup/blob/master/tests/Integration/AdvancedPHPUnitUsageExampleTest.php).
+[Full working example](https://github.com/lzakrzewski/DoctrineDatabaseBackup/blob/master/tests/Integration/AdvancedPHPUnitUsageExampleTest.php).
 
 **Notice:** that before first test of PHP process database should be created.
 

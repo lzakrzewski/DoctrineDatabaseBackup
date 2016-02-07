@@ -1,10 +1,10 @@
 <?php
 
-namespace Lucaszz\DoctrineDatabaseBackup\tests\Integration;
+namespace Lzakrzewski\DoctrineDatabaseBackup\tests\Integration;
 
-use Lucaszz\DoctrineDatabaseBackup\DoctrineDatabaseBackup;
-use Lucaszz\DoctrineDatabaseBackup\Storage\InMemoryStorage;
-use Lucaszz\DoctrineDatabaseBackup\tests\Integration\Dictionary\SqliteDictionary;
+use Lzakrzewski\DoctrineDatabaseBackup\DoctrineDatabaseBackup;
+use Lzakrzewski\DoctrineDatabaseBackup\Storage\InMemoryStorage;
+use Lzakrzewski\DoctrineDatabaseBackup\tests\Integration\Dictionary\SqliteDictionary;
 
 class SqliteBackupTest extends IntegrationTestCase
 {
