@@ -51,7 +51,7 @@ class BasicPHPUnitUsageExampleTest extends \PHPUnit_Framework_TestCase
         $this->entityManager = $this->createEntityManager();
 
         $backup = new DoctrineDatabaseBackup($this->entityManager);
-        $backup->restoreClearDatabase();
+        $backup->restore();
     }
 
     /** {@inheritdoc} */

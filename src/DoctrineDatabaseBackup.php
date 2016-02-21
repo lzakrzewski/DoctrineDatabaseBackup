@@ -11,20 +11,29 @@ class DoctrineDatabaseBackup
     private $backup;
     /** @var Purger */
     private $purger;
+    /** @var EntityManager */
+    private $entityManager;
 
     /**
      * @param EntityManager $entityManager
      */
     public function __construct(EntityManager $entityManager)
     {
+        $this->entityManager = $entityManager;
+
         $this->backup = BackupFactory::instance($entityManager);
         $this->purger = PurgerFactory::instance($entityManager);
     }
 
-    public function restoreClearDatabase()
+    public function restore(callable $setupDatabaseCallback = null)
     {
         if (!$this->backup->isBackupCreated()) {
             $this->purger->purge();
+
+            if (null !== $setupDatabaseCallback) {
+                $setupDatabaseCallback($this->entityManager);
+            }
+
             $this->backup->create();
         }
 

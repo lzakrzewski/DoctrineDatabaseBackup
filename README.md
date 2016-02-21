@@ -34,7 +34,7 @@ Installation
 Require the library with composer:
 
 ```sh
-composer require lzakrzewski/doctrine-database-backup "~1.1"
+composer require lzakrzewski/doctrine-database-backup "~1.2"
 ```
 
 Basic usage (PHPUnit example)
@@ -48,7 +48,7 @@ protected function setUp()
     $this->entityManager = $this->createEntityManager();
 
     $backup = new DoctrineDatabaseBackup($this->entityManager);
-    $backup->restoreClearDatabase();
+    $backup->restore();
 }
 ```
 
@@ -66,17 +66,11 @@ protected function setUp()
     $this->entityManager = $this->createEntityManager();
     $backup = new DoctrineDatabaseBackup($this->entityManager);
     
-    if (!$backup->getBackup()->isBackupCreated()) {
-        $backup->getPurger()->purge();
-
+    $backup->restore(function (EntityManager $entityManager) {
         //your fixtures
-        $this->entityManager->persist(new TestProduct('Iron', 99));
-        $this->entityManager->flush();
-
-        $backup->getBackup()->create();
-    }
-
-    $backup->getBackup()->restore();
+        $entityManager->persist(new TestProduct('Iron', 99));
+        $entityManager->flush();
+    });
 }
 ```
 
@@ -93,6 +87,6 @@ public function restoreDatabase()
 {
     // "getEntityManager" is your own getter for EntityManager
     $backup = new DoctrineDatabaseBackup($this->getEntityManager());
-    $backup->restoreClearDatabase();
+    $backup->restore();
 }
 ```

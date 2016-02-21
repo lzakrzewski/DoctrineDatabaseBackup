@@ -51,17 +51,11 @@ class AdvancedPHPUnitUsageExampleTest extends \PHPUnit_Framework_TestCase
         $this->entityManager = $this->createEntityManager();
         $backup              = new DoctrineDatabaseBackup($this->entityManager);
 
-        if (!$backup->getBackup()->isBackupCreated()) {
-            $backup->getPurger()->purge();
-
+        $backup->restore(function (EntityManager $entityManager) {
             //your fixtures
-            $this->entityManager->persist(new TestProduct('Iron', 99));
-            $this->entityManager->flush();
-
-            $backup->getBackup()->create();
-        }
-
-        $backup->getBackup()->restore();
+            $entityManager->persist(new TestProduct('Iron', 99));
+            $entityManager->flush();
+        });
     }
 
     /** {@inheritdoc} */

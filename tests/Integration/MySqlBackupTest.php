@@ -2,6 +2,7 @@
 
 namespace Lzakrzewski\DoctrineDatabaseBackup\tests\Integration;
 
+use Doctrine\ORM\EntityManager;
 use Lzakrzewski\DoctrineDatabaseBackup\DoctrineDatabaseBackup;
 use Lzakrzewski\DoctrineDatabaseBackup\Storage\InMemoryStorage;
 use Lzakrzewski\DoctrineDatabaseBackup\tests\Integration\Dictionary\MySqlDictionary;
@@ -21,7 +22,7 @@ class MySqlBackupTest extends IntegrationTestCase
         $this->backup->getBackup()->create();
         $this->addProduct();
 
-        $this->backup->restoreClearDatabase();
+        $this->backup->restore();
 
         $this->assertThatDatabaseIsClear();
     }
@@ -40,11 +41,29 @@ class MySqlBackupTest extends IntegrationTestCase
     }
 
     /** @test */
+    public function it_can_restore_database_with_callback()
+    {
+        $this->givenDatabaseIsClear();
+
+        $this->backup->restore(function (EntityManager $entityManager) {
+            $product1 = $this->productInstance();
+            $product2 = $this->productInstance();
+
+            $entityManager->persist($product1);
+            $entityManager->persist($product2);
+
+            $entityManager->flush();
+        });
+
+        $this->assertThatDatabaseContainProducts(2);
+    }
+
+    /** @test */
     public function it_can_clear_database()
     {
         $this->givenDatabaseContainsProducts(5);
 
-        $this->backup->restoreClearDatabase();
+        $this->backup->restore();
 
         $this->assertThatDatabaseIsClear();
     }
