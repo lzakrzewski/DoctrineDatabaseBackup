@@ -96,7 +96,7 @@ class BackupFactoryTest extends \PHPUnit_Framework_TestCase
         $mySqlPlatform = $this->prophesize('\Doctrine\DBAL\Platforms\MySqlPlatform');
 
         $this->connection->getDatabasePlatform()->willReturn($mySqlPlatform->reveal());
-        $this->connection->getParams()->willReturn(['dbname' => 'test', 'host' => 'localhost', 'user' => 'johndoe', 'password' => 'testing1']);
+        $this->connection->getParams()->willReturn(['dbname' => 'test', 'host' => 'localhost', 'port' => '3306', 'user' => 'johndoe', 'password' => 'testing1']);
     }
 
     private function givenUnsupportedDatabasePlatformWasEnabled()

@@ -48,11 +48,12 @@ final class BackupFactory
         }
 
         $host     = (isset($params['host'])) ? $params['host'] : null;
+        $port     = (isset($params['port'])) ? $params['port'] : null;
         $user     = (isset($params['user'])) ? $params['user'] : null;
         $password = (isset($params['password'])) ? $params['password'] : null;
 
         $purger  = PurgerFactory::instance($entityManager);
-        $command = new MysqldumpCommand($params['dbname'], $host, $user, $password);
+        $command = new MysqldumpCommand($params['dbname'], $host, $port, $user, $password);
 
         return new MySqlBackup($entityManager->getConnection(), InMemoryStorage::instance(), $purger, $command);
     }
