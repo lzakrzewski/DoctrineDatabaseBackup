@@ -13,22 +13,30 @@ class DoctrineDatabaseBackup
     private $purger;
     /** @var EntityManager */
     private $entityManager;
+    /** @var bool */
+    private $purgeDB;
 
     /**
      * @param EntityManager $entityManager
+     * @param bool $purgeDB
      */
-    public function __construct(EntityManager $entityManager)
+    public function __construct(EntityManager $entityManager, $purgeDB = true)
     {
         $this->entityManager = $entityManager;
 
         $this->backup = BackupFactory::instance($entityManager);
         $this->purger = PurgerFactory::instance($entityManager);
+
+        $this->purgeDB = $purgeDB;
     }
 
     public function restore(callable $setupDatabaseCallback = null)
     {
         if (!$this->backup->isBackupCreated()) {
-            $this->purger->purge();
+
+            if ($this->purgeDB) {
+                $this->purger->purge();
+            }
 
             if (null !== $setupDatabaseCallback) {
                 $setupDatabaseCallback($this->entityManager);
