@@ -3,8 +3,8 @@
 /*
  * This class was copied from
  * https://github.com/doctrine/data-fixtures/blob/master/lib/Doctrine/Common/DataFixtures/Purger/ORMPurger.php
- * and modified to my needs. 
- * 
+ * and modified to my needs.
+ *
  * Thanks for:
  * <http://www.doctrine-project.org>
  * and Jonathan H. Wage <jonwage@gmail.com>, Benjamin Eberlei <kontakt@beberlei.de>
@@ -102,45 +102,45 @@ class Purger
         $calc = new CommitOrderCalculator();
 
         foreach ($classes as $class) {
-            $calc->addClass($class);
+            $calc->addNode($class->name, $class);
 
             // $class before its parents
             foreach ($class->parentClasses as $parentClass) {
                 $parentClass = $this->entityManager->getClassMetadata($parentClass);
 
-                if (!$calc->hasClass($parentClass->name)) {
-                    $calc->addClass($parentClass);
+                if (!$calc->hasNode($parentClass->name)) {
+                    $calc->addNode($parentClass->name, $parentClass);
                 }
 
-                $calc->addDependency($class, $parentClass);
+                $calc->addDependency($class->name, $parentClass->name, 10);
             }
 
             foreach ($class->associationMappings as $assoc) {
                 if ($assoc['isOwningSide']) {
                     $targetClass = $this->entityManager->getClassMetadata($assoc['targetEntity']);
 
-                    if (!$calc->hasClass($targetClass->name)) {
-                        $calc->addClass($targetClass);
+                    if (!$calc->hasNode($targetClass->name)) {
+                        $calc->addNode($targetClass->name, $targetClass);
                     }
 
                     // add dependency ($targetClass before $class)
-                    $calc->addDependency($targetClass, $class);
+                    $calc->addDependency($targetClass->name, $class->name, 10);
 
                     // parents of $targetClass before $class, too
                     foreach ($targetClass->parentClasses as $parentClass) {
                         $parentClass = $this->entityManager->getClassMetadata($parentClass);
 
-                        if (!$calc->hasClass($parentClass->name)) {
-                            $calc->addClass($parentClass);
+                        if (!$calc->hasNode($parentClass->name)) {
+                            $calc->addNode($parentClass->name, $parentClass);
                         }
 
-                        $calc->addDependency($parentClass, $class);
+                        $calc->addDependency($parentClass->name, $class->name, 10);
                     }
                 }
             }
         }
 
-        return $calc->getCommitOrder();
+        return $calc->sort();
     }
 
     private function getAssociationTables(array $classes, AbstractPlatform $platform)
